@@ -25,7 +25,7 @@ jobs:
       release_tag: ${{ steps.meta.outputs.release_tag }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -46,13 +46,10 @@ jobs:
         run: |
           brew install xcodegen
 
-      - name: Setup Dart
-        uses: dart-lang/setup-dart@v1
-
       - name: Install changelog_cli
         run: |
-          dart pub global activate changelog_cli
-          echo "$HOME/.pub-cache/bin" >> "$GITHUB_PATH"
+          brew tap orestesgaolin/tap
+          brew install changelog_cli
 
       - name: Generate changelog
         run: |
