@@ -2,6 +2,8 @@
 
 A lightweight macOS clipboard manager that lives in your menu bar.
 
+![](docs/screenshot_menu.png)
+
 ## Features
 
 - Clipboard history with rich content support
@@ -24,6 +26,8 @@ open Clips.xcodeproj
 ```
 
 ## Preferences
+
+![](docs/screenshot_app.png)
 
 - **General** — launch at login, max history, sort order, paste shortcut
 - **Appearance** — icon style, inline/folder item counts, character limits, inline images
