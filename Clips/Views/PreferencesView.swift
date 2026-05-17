@@ -193,7 +193,7 @@ private struct AppearanceTab: View {
             }
 
             HStack {
-                Text("Number of folders:")
+                Text("Number of groups:")
                 TextField("", value: $folderCount, format: .number)
                     .frame(width: 60)
                 Stepper("", value: $folderCount, in: 0...10)
@@ -201,7 +201,7 @@ private struct AppearanceTab: View {
             }
 
             HStack {
-                Text("Items per folder:")
+                Text("Items per group:")
                 TextField("", value: $itemsPerFolder, format: .number)
                     .frame(width: 60)
                 Stepper("", value: $itemsPerFolder, in: 1...30)

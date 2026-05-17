@@ -78,7 +78,7 @@ final class StatusBarController: NSObject, NSMenuDelegate {
             }
 
             let folderNumber = inlineCount + folderIndex + 1
-            let folderItem = NSMenuItem(title: "Folder \(folderIndex + 1)", action: nil, keyEquivalent: "")
+            let folderItem = NSMenuItem(title: "Group \(folderIndex + 1)", action: nil, keyEquivalent: "")
             if folderNumber <= 9 {
                 folderItem.keyEquivalent = "\(folderNumber)"
                 folderItem.keyEquivalentModifierMask = []
