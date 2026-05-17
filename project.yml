@@ -1,0 +1,32 @@
+name: Clips
+options:
+  bundleIdPrefix: com.makevisible
+  deploymentTarget:
+    macOS: "15.0"
+  createIntermediateGroups: true
+
+targets:
+  Clips:
+    type: application
+    platform: macOS
+    sources:
+      - path: Clips
+        excludes:
+          - Info.plist
+    info:
+      path: Clips/Info.plist
+      properties:
+        LSUIElement: true
+        CFBundleDisplayName: Clips
+        NSHumanReadableCopyright: "Copyright 2026 Dominik Roszkowski. All rights reserved."
+    settings:
+      base:
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 9JYPC6W7B2
+        PRODUCT_BUNDLE_IDENTIFIER: dev.roszkowski.clips
+        SWIFT_VERSION: "5"
+        PRODUCT_NAME: Clips
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: "1"
+        COMBINE_HIDPI_IMAGES: true
+        ENABLE_HARDENED_RUNTIME: true
