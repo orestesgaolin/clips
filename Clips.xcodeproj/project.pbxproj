@@ -362,17 +362,19 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9JYPC6W7B2;
 				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = Clips/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = dev.roszkowski.clips;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.roszkowski.clips.debug;
 				PRODUCT_NAME = Clips;
 				SDKROOT = macosx;
 				SPARKLE_FEED_URL = "https://orestesgaolin.github.io/clips/appcast.xml";
 				SPARKLE_PUBLIC_ED_KEY = "yQg1h/yuV8QalL0F9YlPd7NTJCf9kA9ZWXkkLimn3Mo=";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_VERSION = 5;
 			};
 			name = Debug;
@@ -386,6 +388,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9JYPC6W7B2;
 				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_OPTIMIZATION_LEVEL = 3;
 				INFOPLIST_FILE = Clips/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -397,6 +400,7 @@
 				SDKROOT = macosx;
 				SPARKLE_FEED_URL = "https://orestesgaolin.github.io/clips/appcast.xml";
 				SPARKLE_PUBLIC_ED_KEY = "yQg1h/yuV8QalL0F9YlPd7NTJCf9kA9ZWXkkLimn3Mo=";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = RELEASE;
 				SWIFT_VERSION = 5;
 			};
 			name = Release;

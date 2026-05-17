@@ -1,26 +1,60 @@
 import AppKit
 import SwiftUI
+import Darwin
 
-final class PreferencesWindowController: NSWindowController {
-    static let shared = PreferencesWindowController()
+private final class FirstMouseHostingView<Content: View>: NSHostingView<Content> {
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
+}
 
-    private convenience init() {
+final class PreferencesWindowController: NSWindowController, NSWindowDelegate {
+    var onWindowClose: (() -> Void)?
+
+    init() {
+        let hostingView = FirstMouseHostingView(rootView: PreferencesView())
+        let fittingSize = hostingView.fittingSize
+
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 540, height: 440),
+            contentRect: NSRect(origin: .zero, size: fittingSize),
             styleMask: [.titled, .closable],
             backing: .buffered,
             defer: false
         )
         window.title = "Clips Preferences"
-        window.contentView = NSHostingView(rootView: PreferencesView())
+        window.contentView = hostingView
+        window.setContentSize(fittingSize)
         window.center()
-        window.isReleasedWhenClosed = false
-        self.init(window: window)
+        window.isReleasedWhenClosed = true
+        super.init(window: window)
+        window.delegate = self
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     override func showWindow(_ sender: Any?) {
         NSApp.activate(ignoringOtherApps: true)
         window?.center()
         window?.makeKeyAndOrderFront(sender)
+        window?.makeFirstResponder(nil)
+    }
+
+    func windowWillClose(_ notification: Notification) {
+        // Release the SwiftUI view graph as soon as the preferences window closes.
+        window?.contentView = nil
+        releaseTransientMemory()
+        onWindowClose?()
+        onWindowClose = nil
+    }
+
+    private func releaseTransientMemory() {
+        let context = PersistenceController.shared.context
+        context.perform {
+            // Refault registered objects loaded while browsing preferences/history.
+            context.refreshAllObjects()
+        }
+
+        // Hint malloc to reclaim purgeable caches after UI teardown.
+        _ = malloc_zone_pressure_relief(nil, 0)
     }
 }

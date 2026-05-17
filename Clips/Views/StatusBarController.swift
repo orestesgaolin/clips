@@ -6,6 +6,7 @@ final class StatusBarController: NSObject, NSMenuDelegate {
     private let monitor: ClipboardMonitor
     private var statusItem: NSStatusItem?
     private var observer: NSObjectProtocol?
+    private var preferencesWindowController: PreferencesWindowController?
 
     init(persistence: PersistenceController, monitor: ClipboardMonitor) {
         self.persistence = persistence
@@ -200,7 +201,17 @@ final class StatusBarController: NSObject, NSMenuDelegate {
     }
 
     @objc private func openPreferences() {
-        PreferencesWindowController.shared.showWindow(nil)
+        if let controller = preferencesWindowController {
+            controller.showWindow(nil)
+            return
+        }
+
+        let controller = PreferencesWindowController()
+        controller.onWindowClose = { [weak self] in
+            self?.preferencesWindowController = nil
+        }
+        preferencesWindowController = controller
+        controller.showWindow(nil)
     }
 
     @objc private func clearHistory() {

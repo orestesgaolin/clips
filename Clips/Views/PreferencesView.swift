@@ -2,19 +2,114 @@ import SwiftUI
 import ServiceManagement
 import UniformTypeIdentifiers
 
+private struct WindowHeightKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
+}
+
 struct PreferencesView: View {
-    var body: some View {
-        TabView {
-            GeneralTab()
-                .tabItem { Label("General", systemImage: "gear") }
-            AppearanceTab()
-                .tabItem { Label("Appearance", systemImage: "paintbrush") }
-            HistoryTab()
-                .tabItem { Label("History", systemImage: "clock") }
-            IgnoredAppsTab()
-                .tabItem { Label("Ignored Apps", systemImage: "xmark.app") }
+    enum Tab: CaseIterable {
+        case general, appearance, history, ignoredApps
+
+        var label: String {
+            switch self {
+            case .general: "General"
+            case .appearance: "Appearance"
+            case .history: "History"
+            case .ignoredApps: "Ignored Apps"
+            }
         }
-        .frame(width: 520, height: 420)
+        var icon: String {
+            switch self {
+            case .general: "gear"
+            case .appearance: "paintbrush"
+            case .history: "clock"
+            case .ignoredApps: "xmark.app"
+            }
+        }
+    }
+
+    @State private var selectedTab: Tab = .general
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                ForEach(Tab.allCases, id: \.self) { tab in
+                    PrefsTabButton(tab: tab, isSelected: selectedTab == tab) {
+                        selectedTab = tab
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.top, 8)
+            .padding(.bottom, 6)
+
+            Divider()
+
+            switch selectedTab {
+            case .general:
+                GeneralTab()
+            case .appearance:
+                AppearanceTab()
+            case .history:
+                HistoryTab()
+                    .frame(minHeight: 400)
+            case .ignoredApps:
+                IgnoredAppsTab()
+                    .frame(minHeight: 400)
+            }
+        }
+        .frame(width: 520)
+        .background(GeometryReader { geo in
+            Color.clear.preference(key: WindowHeightKey.self, value: geo.size.height)
+        })
+        .onPreferenceChange(WindowHeightKey.self) { height in
+            guard height > 0 else { return }
+            DispatchQueue.main.async {
+                guard let window = NSApp.windows.first(where: { $0.title == "Clips Preferences" }) else { return }
+                let currentSize = window.contentView?.frame.size ?? .zero
+                guard abs(currentSize.height - height) > 2 else { return }
+
+                let currentFrame = window.frame
+                let targetContentRect = NSRect(origin: .zero, size: CGSize(width: currentSize.width, height: height))
+                let targetFrameSize = window.frameRect(forContentRect: targetContentRect).size
+                let deltaHeight = targetFrameSize.height - currentFrame.height
+
+                var targetFrame = currentFrame
+                targetFrame.size = targetFrameSize
+                targetFrame.origin.y -= deltaHeight
+
+                window.setFrame(targetFrame, display: true)
+            }
+        }
+    }
+}
+
+private struct PrefsTabButton: View {
+    let tab: PreferencesView.Tab
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 3) {
+                Image(systemName: tab.icon)
+                    .font(.system(size: 18))
+                Text(tab.label)
+                    .font(.system(size: 11))
+            }
+            .foregroundStyle(isSelected ? Color.accentColor : Color.secondary)
+            .frame(maxWidth: .infinity, minHeight: 56)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(isSelected ? Color.accentColor.opacity(0.12) : Color.clear)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+            )
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity)
     }
 }
 
@@ -214,6 +309,7 @@ private struct HistoryTab: View {
         }
         .padding()
         .onAppear { loadEntries() }
+        .onDisappear { clearLoadedEntries() }
     }
 
     private var filteredEntries: [ClipboardEntry] {
@@ -243,6 +339,15 @@ private struct HistoryTab: View {
         context.delete(entry)
         PersistenceController.shared.save()
         loadEntries()
+    }
+
+    private func clearLoadedEntries() {
+        let context = PersistenceController.shared.context
+        for entry in entries {
+            context.refresh(entry, mergeChanges: false)
+        }
+        entries = []
+        searchText = ""
     }
 }
 

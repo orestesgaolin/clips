@@ -1,4 +1,5 @@
 import AppKit
+import Sparkle
 
 @main
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -13,6 +14,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var clipboardMonitor: ClipboardMonitor!
     private var hotKeyManager: HotKeyManager!
     private var hotKeyObserver: NSObjectProtocol?
+    private var updaterController: SPUStandardUpdaterController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         requestAccessibilityIfNeeded()
@@ -33,6 +35,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         ) { [weak self] _ in
             self?.hotKeyManager.reregister()
         }
+
+        updaterController = SPUStandardUpdaterController(
+            startingUpdater: true,
+            updaterDelegate: nil,
+            userDriverDelegate: nil
+        )
+        updaterController?.updater.checkForUpdatesInBackground()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
