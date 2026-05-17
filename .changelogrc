@@ -1,0 +1,23 @@
+{
+  "changelog": {
+    "path": ".",
+    "include": [
+      "feat",
+      "fix",
+      "refactor",
+      "perf",
+      "chore",
+      "docs",
+      "ci"
+    ],
+    "printer": "markdown",
+    "group_by": "",
+    "date_format": "",
+    "date_format_locale": "en_US",
+    "auto": false,
+    "auto_tag_glob_pattern": "",
+    "jira_url": "",
+    "jira_project_key": "",
+    "output": ""
+  }
+}
