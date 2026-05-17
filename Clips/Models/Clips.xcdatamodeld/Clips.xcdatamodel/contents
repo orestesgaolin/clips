@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23507" systemVersion="24A335" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="NO">
+    <entity name="ClipboardEntry" representedClassName="ClipboardEntry" syncable="YES">
+        <attribute name="contentHash" attributeType="String" defaultValueString=""/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isPinned" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="sourceAppBundleId" optional="YES" attributeType="String"/>
+        <attribute name="sourceAppName" optional="YES" attributeType="String"/>
+        <attribute name="title" attributeType="String" defaultValueString=""/>
+        <attribute name="useCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="representations" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="ClipboardRepresentation" inverseName="entry" inverseEntity="ClipboardRepresentation"/>
+    </entity>
+    <entity name="ClipboardRepresentation" representedClassName="ClipboardRepresentation" syncable="YES">
+        <attribute name="data" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
+        <attribute name="typeIdentifier" attributeType="String"/>
+        <relationship name="entry" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ClipboardEntry" inverseName="representations" inverseEntity="ClipboardEntry"/>
+    </entity>
+</model>
