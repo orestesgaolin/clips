@@ -49,6 +49,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         clipboardMonitor.stop()
     }
 
+    @objc func checkForUpdates(_ sender: Any?) {
+        updaterController?.checkForUpdates(sender)
+    }
+
     private func requestAccessibilityIfNeeded() {
         let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue(): true] as CFDictionary
         AXIsProcessTrustedWithOptions(options)
