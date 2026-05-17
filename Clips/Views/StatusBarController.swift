@@ -55,13 +55,8 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         let inlineCount = min(Preferences.inlineItemCount, entries.count)
 
         for i in 0..<inlineCount {
-            let item = menuItem(for: entries[i])
-            let keyNum = i + 1
-            if keyNum <= 9 {
-                item.keyEquivalent = "\(keyNum)"
-                item.keyEquivalentModifierMask = []
-                item.tag = keyNum
-            }
+            let num = (i + 1) % 10
+            let item = menuItem(for: entries[i], prefix: "\(num). ")
             menu.addItem(item)
         }
 
@@ -79,23 +74,14 @@ final class StatusBarController: NSObject, NSMenuDelegate {
                 addedFolders = true
             }
 
-            let folderNumber = inlineCount + folderIndex + 1
-            let folderItem = NSMenuItem(title: "Group \(folderIndex + 1)", action: nil, keyEquivalent: "")
-            if folderNumber <= 9 {
-                folderItem.keyEquivalent = "\(folderNumber)"
-                folderItem.keyEquivalentModifierMask = []
-                folderItem.tag = folderNumber
-            }
+            let rangeStart = start + 1
+            let rangeEnd = end
+            let folderItem = NSMenuItem(title: "\(rangeStart) - \(rangeEnd)", action: nil, keyEquivalent: "")
 
             let submenu = ClipsMenu()
             for (subIndex, i) in (start..<end).enumerated() {
-                let item = menuItem(for: entries[i])
-                let keyNum = subIndex + 1
-                if keyNum <= 9 {
-                    item.keyEquivalent = "\(keyNum)"
-                    item.keyEquivalentModifierMask = []
-                    item.tag = keyNum
-                }
+                let num = (subIndex + 1) % 10
+                let item = menuItem(for: entries[i], prefix: "\(num). ")
                 submenu.addItem(item)
             }
             menu.addItem(folderItem)
@@ -106,18 +92,20 @@ final class StatusBarController: NSObject, NSMenuDelegate {
             menu.addItem(.separator())
         }
 
-        let aboutItem = NSMenuItem(title: "About Clips", action: #selector(openAbout), keyEquivalent: "")
-        aboutItem.target = self
-        menu.addItem(aboutItem)
-
-        let prefsItem = NSMenuItem(title: "Preferences...", action: #selector(openPreferences), keyEquivalent: "")
-        prefsItem.target = self
-        menu.addItem(prefsItem)
-
         let clearItem = NSMenuItem(title: "Clear History", action: #selector(clearHistory), keyEquivalent: "")
         clearItem.target = self
         menu.addItem(clearItem)
-
+      
+        menu.addItem(.separator())
+      
+        let prefsItem = NSMenuItem(title: "Preferences...", action: #selector(openPreferences), keyEquivalent: "")
+        prefsItem.target = self
+        menu.addItem(prefsItem)
+      
+        let aboutItem = NSMenuItem(title: "About Clips", action: #selector(openAbout), keyEquivalent: "")
+        aboutItem.target = self
+        menu.addItem(aboutItem)
+        
         menu.addItem(.separator())
 
         let quitItem = NSMenuItem(title: "Quit Clips", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
@@ -126,8 +114,8 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         return menu
     }
 
-    private func menuItem(for entry: ClipboardEntry) -> NSMenuItem {
-        let title = entry.title
+    private func menuItem(for entry: ClipboardEntry, prefix: String = "") -> NSMenuItem {
+        let title = prefix + entry.title
         let item = NSMenuItem(title: title, action: #selector(pasteEntry(_:)), keyEquivalent: "")
         item.target = self
         item.representedObject = entry.objectID
