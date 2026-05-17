@@ -1,5 +1,6 @@
 import AppKit
 import CoreData
+import SwiftUI
 
 final class StatusBarController: NSObject, NSMenuDelegate {
     private let persistence: PersistenceController
@@ -7,6 +8,7 @@ final class StatusBarController: NSObject, NSMenuDelegate {
     private var statusItem: NSStatusItem?
     private var observer: NSObjectProtocol?
     private var preferencesWindowController: PreferencesWindowController?
+    private var aboutWindowController: AboutWindowController?
 
     init(persistence: PersistenceController, monitor: ClipboardMonitor) {
         self.persistence = persistence
@@ -103,6 +105,10 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         if !entries.isEmpty {
             menu.addItem(.separator())
         }
+
+        let aboutItem = NSMenuItem(title: "About Clips", action: #selector(openAbout), keyEquivalent: "")
+        aboutItem.target = self
+        menu.addItem(aboutItem)
 
         let prefsItem = NSMenuItem(title: "Preferences...", action: #selector(openPreferences), keyEquivalent: "")
         prefsItem.target = self
@@ -214,6 +220,20 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         controller.showWindow(nil)
     }
 
+    @objc private func openAbout() {
+        if let controller = aboutWindowController {
+            controller.showWindow(nil)
+            return
+        }
+
+        let controller = AboutWindowController()
+        controller.onWindowClose = { [weak self] in
+            self?.aboutWindowController = nil
+        }
+        aboutWindowController = controller
+        controller.showWindow(nil)
+    }
+
     @objc private func clearHistory() {
         let context = persistence.context
         let request = ClipboardEntry.fetchRequest()
@@ -245,5 +265,65 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         }
         request.fetchLimit = Preferences.inlineItemCount + Preferences.totalFolderItems
         return (try? persistence.context.fetch(request)) ?? []
+    }
+}
+
+private final class AboutWindowController: NSWindowController, NSWindowDelegate {
+    var onWindowClose: (() -> Void)?
+
+    init() {
+        let rootView = AboutView()
+        let hostingView = NSHostingView(rootView: rootView)
+
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 360, height: 210),
+            styleMask: [.titled, .closable],
+            backing: .buffered,
+            defer: false
+        )
+        window.title = "About Clips"
+        window.contentView = hostingView
+        window.center()
+        window.isReleasedWhenClosed = true
+
+        super.init(window: window)
+        window.delegate = self
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func showWindow(_ sender: Any?) {
+        NSApp.activate(ignoringOtherApps: true)
+        window?.center()
+        window?.makeKeyAndOrderFront(sender)
+        window?.makeFirstResponder(nil)
+    }
+
+    func windowWillClose(_ notification: Notification) {
+        window?.contentView = nil
+        onWindowClose?()
+        onWindowClose = nil
+    }
+}
+
+private struct AboutView: View {
+    private let repoURL = URL(string: "https://github.com/orestesgaolin/clips")!
+
+    var body: some View {
+        VStack(spacing: 12) {
+            Text("Clips")
+                .font(.title2)
+                .fontWeight(.semibold)
+
+            Text("Version \(AppDelegate.appVersionString)")
+                .foregroundStyle(.secondary)
+
+            Link("GitHub Repository", destination: repoURL)
+                .font(.body)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(24)
     }
 }

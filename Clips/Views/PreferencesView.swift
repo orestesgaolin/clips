@@ -152,6 +152,15 @@ private struct GeneralTab: View {
                 Text("Paste shortcut:")
                 ShortcutRecorderView()
             }
+          
+            Divider()
+          
+            HStack {
+              Text("Version:")
+              Text(AppDelegate.appVersionString)
+                .foregroundStyle(.secondary)
+            }
+          
         }
         .padding()
     }

@@ -3,6 +3,12 @@ import Sparkle
 
 @main
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    static var appVersionString: String {
+        let shortVersion = (Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String) ?? "Unknown"
+        let buildNumber = (Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String) ?? "Unknown"
+        return "\(shortVersion) (\(buildNumber))"
+    }
+
     static func main() {
         let app = NSApplication.shared
         let delegate = AppDelegate()
