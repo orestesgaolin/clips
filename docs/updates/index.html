@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Clips Updates</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f7f5ef;
+        --surface: #ffffff;
+        --text: #1f2a37;
+        --muted: #4b5563;
+        --link: #0f766e;
+      }
+
+      body {
+        margin: 0;
+        font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+        background: radial-gradient(circle at top right, #fcefe6, var(--bg) 50%);
+        color: var(--text);
+      }
+
+      main {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 48px 20px 64px;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: 2.3rem;
+        line-height: 1.1;
+      }
+
+      p {
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .card {
+        margin-top: 28px;
+        background: var(--surface);
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 8px 28px rgba(18, 38, 63, 0.1);
+      }
+
+      a {
+        color: var(--link);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Clips Update Feed</h1>
+      <p>This page hosts Sparkle update metadata for Clips.</p>
+      <div class="card">
+        <p><a href="./appcast.xml">Open appcast.xml</a></p>
+        <p><a href="./updates/latest.md">Latest release notes</a></p>
+      </div>
+    </main>
+  </body>
+</html>

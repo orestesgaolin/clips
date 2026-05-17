@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0D4F43F48A0960476AC26751 /* ShortcutRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ED04AB5B52CBB4B7F78D6FA /* ShortcutRecorderView.swift */; };
 		2734DBBD2DCCDA767A78FB0D /* StatusBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EAB23D4B69123C987AB5BFB /* StatusBarController.swift */; };
+		29AAD27174F5D55BE9990A4F /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = F13676BDD4E0991BC05DC24A /* Sparkle */; };
 		3C464A5695147994F9C1A881 /* ClipboardEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85043B2EF36DC5312EE6D02C /* ClipboardEntry.swift */; };
 		3E95C989E54C137A7CA41C42 /* ClipboardRepresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D07C5C619B27C5C4F80FF3AF /* ClipboardRepresentation.swift */; };
 		427C91953C2C01998904A730 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31711827958BC4359841493 /* PersistenceController.swift */; };
@@ -44,6 +45,17 @@
 		E48E2C8982DDA5FAFA4635AA /* ColorDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorDetector.swift; sourceTree = "<group>"; };
 		EEC315F1F35329A3476CB582 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FEB731C68B590993929579B2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29AAD27174F5D55BE9990A4F /* Sparkle in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		086DC0B7E00AAEB78144FF8B /* Views */ = {
@@ -134,6 +146,7 @@
 			buildPhases = (
 				82AC3E256A3C21326B51D75D /* Sources */,
 				F17FA943E7C185ABB3F5D88B /* Resources */,
+				FEB731C68B590993929579B2 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -141,6 +154,7 @@
 			);
 			name = Clips;
 			packageProductDependencies = (
+				F13676BDD4E0991BC05DC24A /* Sparkle */,
 			);
 			productName = Clips;
 			productReference = AF95FEFF0C2DAD4015A7A7DB /* Clips.app */;
@@ -170,6 +184,9 @@
 			);
 			mainGroup = 6436597E7FFEFB4DD0B1B607;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				3ED84B7C7CF5697AE0B1322E /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A88CBC32590D2EA18FD8A3F9 /* Products */;
 			projectDirPath = "";
@@ -354,6 +371,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = dev.roszkowski.clips;
 				PRODUCT_NAME = Clips;
 				SDKROOT = macosx;
+				SPARKLE_FEED_URL = "https://orestesgaolin.github.io/clips/appcast.xml";
+				SPARKLE_PUBLIC_ED_KEY = "yQg1h/yuV8QalL0F9YlPd7NTJCf9kA9ZWXkkLimn3Mo=";
 				SWIFT_VERSION = 5;
 			};
 			name = Debug;
@@ -376,6 +395,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = dev.roszkowski.clips;
 				PRODUCT_NAME = Clips;
 				SDKROOT = macosx;
+				SPARKLE_FEED_URL = "https://orestesgaolin.github.io/clips/appcast.xml";
+				SPARKLE_PUBLIC_ED_KEY = "yQg1h/yuV8QalL0F9YlPd7NTJCf9kA9ZWXkkLimn3Mo=";
 				SWIFT_VERSION = 5;
 			};
 			name = Release;
@@ -402,6 +423,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3ED84B7C7CF5697AE0B1322E /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F13676BDD4E0991BC05DC24A /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3ED84B7C7CF5697AE0B1322E /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		2F8E082261FDECBB9A9F7263 /* Clips.xcdatamodeld */ = {
