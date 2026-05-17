@@ -5,10 +5,7 @@
       "feat",
       "fix",
       "refactor",
-      "perf",
-      "chore",
-      "docs",
-      "ci"
+      "perf"
     ],
     "printer": "markdown",
     "group_by": "",
