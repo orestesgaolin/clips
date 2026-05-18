@@ -188,7 +188,7 @@ jobs:
 
           echo "${{ secrets.SPARKLE_PRIVATE_ED_KEY }}" | "$RUNNER_TEMP/sparkle/bin/generate_appcast" \
             --ed-key-file - \
-            --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/${GITHUB_REF_NAME}" \
+            --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/${{ steps.meta.outputs.release_tag }}/" \
             --release-notes-url-prefix "${PAGES_BASE_URL}/updates/" \
             "$UPDATES_DIR"
 
