@@ -1,10 +1,14 @@
 # Clips
 
+<div align="center">
+  <img src="./docs/icon.png" width="250">
+</div>
+
 A lightweight macOS clipboard manager that lives in your menu bar.
 
-![](docs/screenshot_menu.png)
-
 ## Features
+
+<img align="right" width="300"  src="./docs/screenshot_menu.png">
 
 - Clipboard history with rich content support
 - Global hotkey (Cmd+Shift+V) to show history

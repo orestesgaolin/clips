@@ -18,6 +18,7 @@
 		7100404DE34F26DABA46C6D2 /* ClipsMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95AD5C2FE25E8DE417255763 /* ClipsMenu.swift */; };
 		8BE6565B070B19B538BB9405 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC315F1F35329A3476CB582 /* AppDelegate.swift */; };
 		8D6BDAE6841AF902C616F9B6 /* HotKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB8CCDA63270543DAD8184E /* HotKeyManager.swift */; };
+		ABE75DF850B22034031240BE /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = A2927DBC6131A3D53F4FDD7B /* AppIcon.icon */; };
 		B06B1F6244E14F6A3B7396C3 /* ClipboardMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FDB9C037B0A90BF0ADA8254 /* ClipboardMonitor.swift */; };
 		BC955DEED12E0EC83E26763D /* ColorDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2C8982DDA5FAFA4635AA /* ColorDetector.swift */; };
 		D9B98D07C724B0AE4CC1557C /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07EBBA0360E27B439FE55712 /* PreferencesView.swift */; };
@@ -37,6 +38,7 @@
 		95AD5C2FE25E8DE417255763 /* ClipsMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipsMenu.swift; sourceTree = "<group>"; };
 		9AB8CCDA63270543DAD8184E /* HotKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotKeyManager.swift; sourceTree = "<group>"; };
 		9E8F8A5AA669B86E2B2B2356 /* ClipsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipsApp.swift; sourceTree = "<group>"; };
+		A2927DBC6131A3D53F4FDD7B /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		AF95FEFF0C2DAD4015A7A7DB /* Clips.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Clips.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B916506F107E05FE526DC0C9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C31711827958BC4359841493 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
@@ -100,6 +102,7 @@
 		9422A98EBD66A92C0F8C343E /* Clips */ = {
 			isa = PBXGroup;
 			children = (
+				A2927DBC6131A3D53F4FDD7B /* AppIcon.icon */,
 				B916506F107E05FE526DC0C9 /* Assets.xcassets */,
 				50269984E1543D66B75EBF7A /* App */,
 				B191BE446D7650559B2BA1E6 /* Helpers */,
@@ -202,6 +205,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ABE75DF850B22034031240BE /* AppIcon.icon in Resources */,
 				E503C807ADAD3C267CA26EBE /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
