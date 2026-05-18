@@ -218,9 +218,9 @@ jobs:
       - name: Validate generated appcast
         run: |
           APPCAST_PATH="$SITE_DIR/appcast.xml"
-          SHORT_VERSION=$(grep -oPm1 '(?<=<sparkle:shortVersionString>)[^<]+' "$APPCAST_PATH")
-          BUILD_VERSION=$(grep -oPm1 '(?<=<sparkle:version>)[^<]+' "$APPCAST_PATH")
-          ENCLOSURE_URL=$(grep -oPm1 '(?<=<enclosure url=")[^"]+' "$APPCAST_PATH")
+          SHORT_VERSION=$(sed -n 's:.*<sparkle:shortVersionString>\([^<]*\)</sparkle:shortVersionString>.*:\1:p' "$APPCAST_PATH" | head -n1)
+          BUILD_VERSION=$(sed -n 's:.*<sparkle:version>\([^<]*\)</sparkle:version>.*:\1:p' "$APPCAST_PATH" | head -n1)
+          ENCLOSURE_URL=$(sed -n 's:.*<enclosure url="\([^"]*\)".*:\1:p' "$APPCAST_PATH" | head -n1)
 
           if [ "$SHORT_VERSION" != "$VERSION" ]; then
             echo "Appcast short version mismatch: expected $VERSION, got $SHORT_VERSION"
