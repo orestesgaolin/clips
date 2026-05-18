@@ -144,16 +144,16 @@ private struct GeneralTab: View {
 
             Toggle("Pasting moves item to top", isOn: $pastingMovesToTop)
 
-            Button("Check for Updates…") {
-                (NSApp.delegate as? AppDelegate)?.checkForUpdates(nil)
-            }
-
             HStack {
                 Text("Paste shortcut:")
                 ShortcutRecorderView()
             }
           
             Divider()
+          
+            Button("Check for Updates…") {
+              (NSApp.delegate as? AppDelegate)?.checkForUpdates(nil)
+            }
           
             HStack {
               Text("Version:")
