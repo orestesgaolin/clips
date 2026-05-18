@@ -23,6 +23,8 @@ targets:
       properties:
         LSUIElement: true
         CFBundleDisplayName: Clips
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         NSHumanReadableCopyright: "Copyright 2026 Dominik Roszkowski. All rights reserved."
         SUFeedURL: $(SPARKLE_FEED_URL)
         SUPublicEDKey: $(SPARKLE_PUBLIC_ED_KEY)
@@ -38,7 +40,7 @@ targets:
         CURRENT_PROJECT_VERSION: "1"
         COMBINE_HIDPI_IMAGES: true
         ENABLE_HARDENED_RUNTIME: true
-        SPARKLE_FEED_URL: https://orestesgaolin.github.io/clips/appcast.xml
+        SPARKLE_FEED_URL: https://roszkowski.dev/clips/appcast.xml
         SPARKLE_PUBLIC_ED_KEY: "yQg1h/yuV8QalL0F9YlPd7NTJCf9kA9ZWXkkLimn3Mo="
       configs:
         Debug:

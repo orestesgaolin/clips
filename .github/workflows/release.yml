@@ -15,7 +15,7 @@ env:
   APP_NAME: Clips
   SCHEME: Clips
   PROJECT_FILE: Clips.xcodeproj
-  PAGES_BASE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+  PAGES_BASE_URL: https://roszkowski.dev/clips
 
 jobs:
   build_release:
@@ -99,6 +99,22 @@ jobs:
             DEVELOPMENT_TEAM="${{ secrets.APPLE_DEVELOPER_TEAM_ID }}" \
             SPARKLE_PUBLIC_ED_KEY="${{ secrets.SPARKLE_PUBLIC_ED_KEY }}" \
             clean archive
+
+      - name: Validate archived app version
+        run: |
+          ARCHIVE_INFO_PLIST="$ARCHIVE_PATH/Products/Applications/${APP_NAME}.app/Contents/Info.plist"
+          ARCHIVE_SHORT_VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$ARCHIVE_INFO_PLIST")
+          ARCHIVE_BUILD_VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$ARCHIVE_INFO_PLIST")
+
+          if [ "$ARCHIVE_SHORT_VERSION" != "$VERSION" ]; then
+            echo "Archived app short version mismatch: expected $VERSION, got $ARCHIVE_SHORT_VERSION"
+            exit 1
+          fi
+
+          if [ "$ARCHIVE_BUILD_VERSION" != "${GITHUB_RUN_NUMBER}" ]; then
+            echo "Archived app build version mismatch: expected ${GITHUB_RUN_NUMBER}, got $ARCHIVE_BUILD_VERSION"
+            exit 1
+          fi
 
       - name: Export Developer ID app
         run: |
@@ -197,6 +213,29 @@ jobs:
           cp "$UPDATE_NOTES" "$SITE_DIR/updates/latest.md"
           if [ -f docs/updates/index.html ]; then
             cp docs/updates/index.html "$SITE_DIR/index.html"
+          fi
+
+      - name: Validate generated appcast
+        run: |
+          APPCAST_PATH="$SITE_DIR/appcast.xml"
+          SHORT_VERSION=$(grep -oPm1 '(?<=<sparkle:shortVersionString>)[^<]+' "$APPCAST_PATH")
+          BUILD_VERSION=$(grep -oPm1 '(?<=<sparkle:version>)[^<]+' "$APPCAST_PATH")
+          ENCLOSURE_URL=$(grep -oPm1 '(?<=<enclosure url=")[^"]+' "$APPCAST_PATH")
+
+          if [ "$SHORT_VERSION" != "$VERSION" ]; then
+            echo "Appcast short version mismatch: expected $VERSION, got $SHORT_VERSION"
+            exit 1
+          fi
+
+          if [ -z "$BUILD_VERSION" ]; then
+            echo "Appcast build version is empty"
+            exit 1
+          fi
+
+          EXPECTED_PREFIX="https://github.com/${{ github.repository }}/releases/download/${{ steps.meta.outputs.release_tag }}/"
+          if [[ "$ENCLOSURE_URL" != ${EXPECTED_PREFIX}* ]]; then
+            echo "Appcast enclosure URL mismatch: expected prefix $EXPECTED_PREFIX, got $ENCLOSURE_URL"
+            exit 1
           fi
 
       - name: Create GitHub release
