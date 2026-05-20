@@ -49,6 +49,7 @@ jobs:
       - name: Install dependencies
         run: |
           brew install xcodegen
+          npm install --global create-dmg
 
       - name: Select Xcode 26
         run: |
@@ -181,7 +182,6 @@ jobs:
           APP_PATH="$EXPORT_DIR/${APP_NAME}.app"
           ZIP_PATH="$RELEASE_DIR/${APP_NAME}-${VERSION}.zip"
           DMG_PATH="$RELEASE_DIR/${APP_NAME}-${VERSION}.dmg"
-          DMG_STAGING="$RUNNER_TEMP/dmg-staging"
 
           ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "$ZIP_PATH"
 
@@ -194,25 +194,15 @@ jobs:
           xcrun stapler staple "$APP_PATH"
           ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "$ZIP_PATH"
 
-          rm -rf "$DMG_STAGING"
-          mkdir -p "$DMG_STAGING"
-          cp -R "$APP_PATH" "$DMG_STAGING/${APP_NAME}.app"
-          ln -s /Applications "$DMG_STAGING/Applications"
+          create-dmg \
+            --overwrite \
+            --identity="Developer ID Application" \
+            "$APP_PATH" \
+            "$RELEASE_DIR"
 
-          hdiutil create \
-            -volname "$APP_NAME" \
-            -srcfolder "$DMG_STAGING" \
-            -ov \
-            -format UDZO \
-            "$DMG_PATH"
-
-          DMG_SIGNING_IDENTITY=$(security find-identity -v -p codesigning | sed -n 's/.*"\(Developer ID Application:.*\)"/\1/p' | head -n1)
-          if [ -z "$DMG_SIGNING_IDENTITY" ]; then
-            echo "Failed to locate a Developer ID Application signing identity for DMG signing."
-            security find-identity -v -p codesigning
-            exit 1
-          fi
-          codesign --force --timestamp --sign "$DMG_SIGNING_IDENTITY" "$DMG_PATH"
+          # create-dmg outputs "App Name X.Y.Z.dmg" — rename to our convention
+          CREATED_DMG=$(find "$RELEASE_DIR" -name "*.dmg" | head -n1)
+          mv "$CREATED_DMG" "$DMG_PATH"
 
           xcrun notarytool submit "$DMG_PATH" \
             --key "$ASC_KEY_PATH" \
