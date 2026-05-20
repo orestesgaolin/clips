@@ -20,6 +20,7 @@ env:
 jobs:
   build_release:
     runs-on: macos-26
+    environment: production
     outputs:
       version: ${{ steps.meta.outputs.version }}
       release_tag: ${{ steps.meta.outputs.release_tag }}
@@ -64,7 +65,7 @@ jobs:
           [ -n "$PREVIOUS_TAG" ] && ARGS+=(--start "$PREVIOUS_TAG")
           changelog_cli generate "${ARGS[@]}"
 
-      - uses: apple-actions/import-codesign-certs@v3
+      - uses: apple-actions/import-codesign-certs@v7
         with:
           p12-file-base64: ${{ secrets.MACOS_CERTIFICATE_P12 }}
           p12-password: ${{ secrets.MACOS_CERTIFICATE_PWD }}
@@ -74,6 +75,7 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           echo "${{ secrets.MACOS_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode \
             > ~/Library/MobileDevice/Provisioning\ Profiles/profile.provisionprofile
+
           KEY_PATH="$RUNNER_TEMP/AuthKey_${{ secrets.APP_STORE_CONNECT_KEY_ID }}.p8"
           echo "${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}" | base64 --decode > "$KEY_PATH"
           echo "ASC_KEY_PATH=$KEY_PATH" >> "$GITHUB_ENV"
