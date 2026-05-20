@@ -33,18 +33,27 @@ jobs:
         id: meta
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "release_tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
-          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
-          echo "ARCHIVE_PATH=$RUNNER_TEMP/${APP_NAME}.xcarchive" >> "$GITHUB_ENV"
-          echo "EXPORT_DIR=$RUNNER_TEMP/export" >> "$GITHUB_ENV"
-          echo "RELEASE_DIR=$RUNNER_TEMP/release" >> "$GITHUB_ENV"
-          echo "SITE_DIR=$RUNNER_TEMP/site" >> "$GITHUB_ENV"
-          echo "UPDATES_DIR=$RUNNER_TEMP/updates" >> "$GITHUB_ENV"
+          {
+            echo "version=$VERSION"
+            echo "release_tag=${GITHUB_REF_NAME}"
+          } >> "$GITHUB_OUTPUT"
+          {
+            echo "VERSION=$VERSION"
+            echo "ARCHIVE_PATH=$RUNNER_TEMP/${APP_NAME}.xcarchive"
+            echo "EXPORT_DIR=$RUNNER_TEMP/export"
+            echo "RELEASE_DIR=$RUNNER_TEMP/release"
+            echo "SITE_DIR=$RUNNER_TEMP/site"
+            echo "UPDATES_DIR=$RUNNER_TEMP/updates"
+          } >> "$GITHUB_ENV"
 
       - name: Install dependencies
         run: |
           brew install xcodegen
+
+      - name: Select Xcode 26
+        run: |
+          sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
+          xcodebuild -version
 
       - name: Install changelog_cli
         run: |
@@ -116,6 +125,19 @@ jobs:
             exit 1
           fi
 
+          ARCHIVE_ICON_FILE=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIconFile" "$ARCHIVE_INFO_PLIST" 2>/dev/null || true)
+          ARCHIVE_ICON_NAME=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIconName" "$ARCHIVE_INFO_PLIST" 2>/dev/null || true)
+
+          if [ "$ARCHIVE_ICON_FILE" != "AppIcon" ] || [ "$ARCHIVE_ICON_NAME" != "AppIcon" ]; then
+            echo "Archived app icon metadata is missing or invalid: CFBundleIconFile=$ARCHIVE_ICON_FILE CFBundleIconName=$ARCHIVE_ICON_NAME"
+            exit 1
+          fi
+
+          if [ ! -f "$ARCHIVE_PATH/Products/Applications/${APP_NAME}.app/Contents/Resources/AppIcon.icns" ]; then
+            echo "Archived app is missing Contents/Resources/AppIcon.icns"
+            exit 1
+          fi
+
       - name: Export Developer ID app
         run: |
           cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
@@ -138,6 +160,20 @@ jobs:
             -archivePath "$ARCHIVE_PATH" \
             -exportPath "$EXPORT_DIR" \
             -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist"
+
+          EXPORT_INFO_PLIST="$EXPORT_DIR/${APP_NAME}.app/Contents/Info.plist"
+          EXPORT_ICON_FILE=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIconFile" "$EXPORT_INFO_PLIST" 2>/dev/null || true)
+          EXPORT_ICON_NAME=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIconName" "$EXPORT_INFO_PLIST" 2>/dev/null || true)
+
+          if [ "$EXPORT_ICON_FILE" != "AppIcon" ] || [ "$EXPORT_ICON_NAME" != "AppIcon" ]; then
+            echo "Exported app icon metadata is missing or invalid: CFBundleIconFile=$EXPORT_ICON_FILE CFBundleIconName=$EXPORT_ICON_NAME"
+            exit 1
+          fi
+
+          if [ ! -f "$EXPORT_DIR/${APP_NAME}.app/Contents/Resources/AppIcon.icns" ]; then
+            echo "Exported app is missing Contents/Resources/AppIcon.icns"
+            exit 1
+          fi
 
       - name: Notarize and staple
         run: |
