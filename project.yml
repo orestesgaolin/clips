@@ -32,7 +32,8 @@ targets:
         SUAllowsAutomaticUpdates: true
     settings:
       base:
-        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: "Developer ID Application"
         DEVELOPMENT_TEAM: 9JYPC6W7B2
         SWIFT_VERSION: "5"
         PRODUCT_NAME: Clips

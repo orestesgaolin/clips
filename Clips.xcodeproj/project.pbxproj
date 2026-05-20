@@ -215,7 +215,11 @@
 				TargetAttributes = {
 					0812FBFA88C820A6D233A824 = {
 						DevelopmentTeam = 9JYPC6W7B2;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
+					};
+					4493B952505765D2FF3C122A = {
+						DevelopmentTeam = 9JYPC6W7B2;
+						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -459,7 +463,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9JYPC6W7B2;
@@ -485,7 +490,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9JYPC6W7B2;

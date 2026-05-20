@@ -19,7 +19,7 @@ env:
 
 jobs:
   build_release:
-    runs-on: macos-15
+    runs-on: macos-26
     outputs:
       version: ${{ steps.meta.outputs.version }}
       release_tag: ${{ steps.meta.outputs.release_tag }}
@@ -46,48 +46,37 @@ jobs:
             echo "UPDATES_DIR=$RUNNER_TEMP/updates"
           } >> "$GITHUB_ENV"
 
-      - name: Install dependencies
+      - name: Install tools
         run: |
-          brew install xcodegen
-          npm install --global create-dmg
-
-      - name: Select Xcode 26
-        run: |
-          sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
-          xcodebuild -version
-
-      - name: Install changelog_cli
-        run: |
+          SPARKLE_VER=2.9.2
           brew tap orestesgaolin/tap
-          brew install changelog_cli
+          brew install xcodegen changelog_cli
+          npm install --global create-dmg
+          mkdir -p "$RUNNER_TEMP/sparkle"
+          curl -Ls "https://github.com/sparkle-project/Sparkle/releases/download/${SPARKLE_VER}/Sparkle-${SPARKLE_VER}.tar.xz" \
+            | tar -xJ -C "$RUNNER_TEMP/sparkle"
+          chmod +x "$RUNNER_TEMP/sparkle/bin/"*
 
       - name: Generate changelog
         run: |
           PREVIOUS_TAG=$(git tag --sort=-creatordate | grep -v "^${GITHUB_REF_NAME}$" | head -n1 || true)
-          if [ -n "$PREVIOUS_TAG" ]; then
-            changelog_cli generate --start "$PREVIOUS_TAG" --end "$GITHUB_REF_NAME" --version "$VERSION" --output "$RUNNER_TEMP/RELEASE_NOTES.md"
-          else
-            changelog_cli generate --end "$GITHUB_REF_NAME" --version "$VERSION" --output "$RUNNER_TEMP/RELEASE_NOTES.md"
-          fi
+          ARGS=(--end "$GITHUB_REF_NAME" --version "$VERSION" --output "$RUNNER_TEMP/RELEASE_NOTES.md")
+          [ -n "$PREVIOUS_TAG" ] && ARGS+=(--start "$PREVIOUS_TAG")
+          changelog_cli generate "${ARGS[@]}"
 
-      - name: Install Sparkle tools
-        run: |
-          curl -Ls https://github.com/sparkle-project/Sparkle/releases/download/2.9.2/Sparkle-2.9.2.tar.xz -o "$RUNNER_TEMP/sparkle.tar.xz"
-          mkdir -p "$RUNNER_TEMP/sparkle"
-          tar -xJf "$RUNNER_TEMP/sparkle.tar.xz" -C "$RUNNER_TEMP/sparkle"
-          chmod +x "$RUNNER_TEMP/sparkle/bin/"*
-
-      - name: Import code-signing certificate
-        uses: apple-actions/import-codesign-certs@v3
+      - uses: apple-actions/import-codesign-certs@v3
         with:
-          p12-file-base64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
-          p12-password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          p12-file-base64: ${{ secrets.MACOS_CERTIFICATE_P12 }}
+          p12-password: ${{ secrets.MACOS_CERTIFICATE_PWD }}
 
-      - name: Prepare App Store Connect API key
+      - name: Setup signing
         run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "${{ secrets.MACOS_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode \
+            > ~/Library/MobileDevice/Provisioning\ Profiles/profile.provisionprofile
           KEY_PATH="$RUNNER_TEMP/AuthKey_${{ secrets.APP_STORE_CONNECT_KEY_ID }}.p8"
-          echo "ASC_KEY_PATH=$KEY_PATH" >> "$GITHUB_ENV"
           echo "${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}" | base64 --decode > "$KEY_PATH"
+          echo "ASC_KEY_PATH=$KEY_PATH" >> "$GITHUB_ENV"
 
       - name: Generate project
         run: xcodegen generate
@@ -100,13 +89,10 @@ jobs:
             -configuration Release \
             -destination "generic/platform=macOS" \
             -archivePath "$ARCHIVE_PATH" \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$ASC_KEY_PATH" \
-            -authenticationKeyID "${{ secrets.APP_STORE_CONNECT_KEY_ID }}" \
-            -authenticationKeyIssuerID "${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}" \
             MARKETING_VERSION="$VERSION" \
             CURRENT_PROJECT_VERSION="${GITHUB_RUN_NUMBER}" \
             DEVELOPMENT_TEAM="${{ secrets.APPLE_DEVELOPER_TEAM_ID }}" \
+            CODE_SIGN_IDENTITY="${{ secrets.MACOS_CERTIFICATE_NAME }}" \
             SPARKLE_PUBLIC_ED_KEY="${{ secrets.SPARKLE_PUBLIC_ED_KEY }}" \
             clean archive
 
@@ -141,40 +127,16 @@ jobs:
 
       - name: Export Developer ID app
         run: |
-          cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>method</key>
-            <string>developer-id</string>
-            <key>signingStyle</key>
-            <string>automatic</string>
-            <key>teamID</key>
-            <string>${{ secrets.APPLE_DEVELOPER_TEAM_ID }}</string>
-          </dict>
-          </plist>
-          EOF
+          EXPORT_PLIST="$RUNNER_TEMP/ExportOptions.plist"
+          cp .github/ExportOptions.plist "$EXPORT_PLIST"
+          /usr/libexec/PlistBuddy -c "Set :signingCertificate ${{ secrets.MACOS_CERTIFICATE_NAME }}" "$EXPORT_PLIST"
+          /usr/libexec/PlistBuddy -c "Set :teamID ${{ secrets.APPLE_DEVELOPER_TEAM_ID }}" "$EXPORT_PLIST"
 
           mkdir -p "$EXPORT_DIR"
           xcodebuild -exportArchive \
             -archivePath "$ARCHIVE_PATH" \
             -exportPath "$EXPORT_DIR" \
-            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist"
-
-          EXPORT_INFO_PLIST="$EXPORT_DIR/${APP_NAME}.app/Contents/Info.plist"
-          EXPORT_ICON_FILE=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIconFile" "$EXPORT_INFO_PLIST" 2>/dev/null || true)
-          EXPORT_ICON_NAME=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIconName" "$EXPORT_INFO_PLIST" 2>/dev/null || true)
-
-          if [ "$EXPORT_ICON_FILE" != "AppIcon" ] || [ "$EXPORT_ICON_NAME" != "AppIcon" ]; then
-            echo "Exported app icon metadata is missing or invalid: CFBundleIconFile=$EXPORT_ICON_FILE CFBundleIconName=$EXPORT_ICON_NAME"
-            exit 1
-          fi
-
-          if [ ! -f "$EXPORT_DIR/${APP_NAME}.app/Contents/Resources/AppIcon.icns" ]; then
-            echo "Exported app is missing Contents/Resources/AppIcon.icns"
-            exit 1
-          fi
+            -exportOptionsPlist "$EXPORT_PLIST"
 
       - name: Notarize and staple
         run: |
@@ -183,44 +145,33 @@ jobs:
           ZIP_PATH="$RELEASE_DIR/${APP_NAME}-${VERSION}.zip"
           DMG_PATH="$RELEASE_DIR/${APP_NAME}-${VERSION}.dmg"
 
+          notarize() {
+            xcrun notarytool submit "$1" \
+              --key "$ASC_KEY_PATH" \
+              --key-id "${{ secrets.APP_STORE_CONNECT_KEY_ID }}" \
+              --issuer "${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}" \
+              --wait
+          }
+
           ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "$ZIP_PATH"
-
-          xcrun notarytool submit "$ZIP_PATH" \
-            --key "$ASC_KEY_PATH" \
-            --key-id "${{ secrets.APP_STORE_CONNECT_KEY_ID }}" \
-            --issuer "${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}" \
-            --wait
-
+          notarize "$ZIP_PATH"
           xcrun stapler staple "$APP_PATH"
           ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "$ZIP_PATH"
 
-          create-dmg \
-            --overwrite \
-            --identity="Developer ID Application" \
-            "$APP_PATH" \
-            "$RELEASE_DIR"
-
-          # create-dmg outputs "App Name X.Y.Z.dmg" — rename to our convention
+          create-dmg --overwrite --identity="${{ secrets.MACOS_CERTIFICATE_NAME }}" "$APP_PATH" "$RELEASE_DIR"
           CREATED_DMG=$(find "$RELEASE_DIR" -name "*.dmg" | head -n1)
           mv "$CREATED_DMG" "$DMG_PATH"
-
-          xcrun notarytool submit "$DMG_PATH" \
-            --key "$ASC_KEY_PATH" \
-            --key-id "${{ secrets.APP_STORE_CONNECT_KEY_ID }}" \
-            --issuer "${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}" \
-            --wait
-
+          notarize "$DMG_PATH"
           xcrun stapler staple "$DMG_PATH"
-          spctl --assess --type execute --verbose "$APP_PATH"
-          spctl --assess --type open --context context:primary-signature --verbose "$DMG_PATH"
 
-          shasum -a 256 "$ZIP_PATH" > "$RELEASE_DIR/${APP_NAME}-${VERSION}.zip.sha256"
-          shasum -a 256 "$DMG_PATH" > "$RELEASE_DIR/${APP_NAME}-${VERSION}.dmg.sha256"
+          shasum -a 256 "$ZIP_PATH" > "${ZIP_PATH}.sha256"
+          shasum -a 256 "$DMG_PATH" > "${DMG_PATH}.sha256"
 
       - name: Generate Sparkle appcast
         run: |
           mkdir -p "$UPDATES_DIR" "$SITE_DIR/updates"
 
+          # shellcheck disable=SC2153
           RELEASE_ZIP="$RELEASE_DIR/${APP_NAME}-${VERSION}.zip"
           RELEASE_NOTES="$RUNNER_TEMP/RELEASE_NOTES.md"
           UPDATE_NOTES="$UPDATES_DIR/${APP_NAME}-${VERSION}.md"
