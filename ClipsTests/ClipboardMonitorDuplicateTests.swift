@@ -1,67 +1,59 @@
+import AppKit
 import XCTest
-import CoreData
 @testable import Clips
 
 final class ClipboardMonitorDuplicateTests: XCTestCase {
-    var persistence: PersistenceController!
-    
-    override func setUp() {
-        super.setUp()
-        persistence = PersistenceController.shared
+    func testSameTextKeepsSameHashWhenMetadataChanges() {
+        let firstItem = NSPasteboardItem()
+        firstItem.setString("same text", forType: .string)
+        firstItem.setData(Data("metadata-a".utf8), forType: NSPasteboard.PasteboardType("com.example.source"))
+
+        let secondItem = NSPasteboardItem()
+        secondItem.setString("same text", forType: .string)
+        secondItem.setData(Data("metadata-b".utf8), forType: NSPasteboard.PasteboardType("com.example.source"))
+        secondItem.setData(Data("metadata-c".utf8), forType: NSPasteboard.PasteboardType("com.example.timestamp"))
+
+        let firstHash = ClipboardContentHasher.hash(
+            item: firstItem,
+            types: firstItem.types,
+            representations: representations(for: firstItem)
+        )
+        let secondHash = ClipboardContentHasher.hash(
+            item: secondItem,
+            types: secondItem.types,
+            representations: representations(for: secondItem)
+        )
+
+        XCTAssertEqual(firstHash, secondHash)
     }
-    
-    override func tearDown() {
-        persistence = nil
-        super.tearDown()
+
+    func testDifferentTextProducesDifferentHash() {
+        let firstItem = NSPasteboardItem()
+        firstItem.setString("first text", forType: .string)
+        firstItem.setData(Data("metadata-a".utf8), forType: NSPasteboard.PasteboardType("com.example.source"))
+
+        let secondItem = NSPasteboardItem()
+        secondItem.setString("second text", forType: .string)
+        secondItem.setData(Data("metadata-a".utf8), forType: NSPasteboard.PasteboardType("com.example.source"))
+
+        let firstHash = ClipboardContentHasher.hash(
+            item: firstItem,
+            types: firstItem.types,
+            representations: representations(for: firstItem)
+        )
+        let secondHash = ClipboardContentHasher.hash(
+            item: secondItem,
+            types: secondItem.types,
+            representations: representations(for: secondItem)
+        )
+
+        XCTAssertNotEqual(firstHash, secondHash)
     }
-    
-    /// Test that entries with the same hash can be fetched reliably
-    func testHashFetchIsConsistent() throws {
-        let context = persistence.context
-        let testHash = "consistent-hash-\(UUID().uuidString)"
-        
-        // Create entry
-        let entry = ClipboardEntry(context: context)
-        entry.id = UUID()
-        entry.createdAt = Date()
-        entry.useCount = 0
-        entry.isPinned = false
-        entry.contentHash = testHash
-        entry.title = "Test Entry"
-        persistence.save()
-        
-        // Fetch multiple times - should find the same entry each time
-        let request = ClipboardEntry.fetchRequest()
-        request.predicate = NSPredicate(format: "contentHash == %@", testHash)
-        request.fetchLimit = 1
-        
-        for attempt in 0..<3 {
-            let results = try context.fetch(request)
-            XCTAssertEqual(results.count, 1, "Attempt \(attempt): Should consistently find exactly one entry")
+
+    private func representations(for item: NSPasteboardItem) -> [(String, Data)] {
+        item.types.compactMap { type in
+            guard let data = item.data(forType: type) else { return nil }
+            return (type.rawValue, data)
         }
-    }
-    
-    /// Test that duplicate text entries are not created
-    func testNoDuplicatesWithSameHash() throws {
-        let context = persistence.context
-        let testHash = "dup-test-\(UUID().uuidString)"
-        
-        // Create entry
-        let entry = ClipboardEntry(context: context)
-        entry.id = UUID()
-        entry.createdAt = Date()
-        entry.useCount = 0
-        entry.isPinned = false
-        entry.contentHash = testHash
-        entry.title = "Test Content"
-        persistence.save()
-        
-        // Fetch by hash - should find it
-        let request = ClipboardEntry.fetchRequest()
-        request.predicate = NSPredicate(format: "contentHash == %@", testHash)
-        request.fetchLimit = 1
-        
-        let found = try context.fetch(request).first
-        XCTAssertNotNil(found, "Should find existing entry by hash on second paste")
     }
 }

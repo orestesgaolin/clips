@@ -2,6 +2,37 @@ import AppKit
 import CoreData
 import CryptoKit
 
+enum ClipboardContentHasher {
+    static func hash(
+        item: NSPasteboardItem,
+        types: [NSPasteboard.PasteboardType],
+        representations: [(String, Data)]
+    ) -> String {
+        if let text = item.string(forType: .string) {
+            return hashRepresentations([(NSPasteboard.PasteboardType.string.rawValue, Data(text.utf8))])
+        }
+
+        if types.contains(.fileURL), let fileURL = item.string(forType: .fileURL) {
+            return hashRepresentations([(NSPasteboard.PasteboardType.fileURL.rawValue, Data(fileURL.utf8))])
+        }
+
+        if types.contains(.URL), let url = item.string(forType: .URL) {
+            return hashRepresentations([(NSPasteboard.PasteboardType.URL.rawValue, Data(url.utf8))])
+        }
+
+        return hashRepresentations(representations)
+    }
+
+    private static func hashRepresentations(_ representations: [(String, Data)]) -> String {
+        var hasher = SHA256()
+        for (type, data) in representations.sorted(by: { $0.0 < $1.0 }) {
+            hasher.update(data: Data(type.utf8))
+            hasher.update(data: data)
+        }
+        return hasher.finalize().map { String(format: "%02x", $0) }.joined()
+    }
+}
+
 final class ClipboardMonitor {
     private let persistence: PersistenceController
     private var timer: Timer?
@@ -51,7 +82,7 @@ final class ClipboardMonitor {
         }
         guard !representations.isEmpty else { return }
 
-        let hash = computeHash(representations)
+        let hash = ClipboardContentHasher.hash(item: item, types: types, representations: representations)
         let context = persistence.context
 
         // Check for existing entry with this hash
@@ -92,15 +123,6 @@ final class ClipboardMonitor {
         persistence.save()
         enforceMaxHistory()
         NotificationCenter.default.post(name: .clipboardDidChange, object: nil)
-    }
-
-    private func computeHash(_ representations: [(String, Data)]) -> String {
-        var hasher = SHA256()
-        for (type, data) in representations.sorted(by: { $0.0 < $1.0 }) {
-            hasher.update(data: Data(type.utf8))
-            hasher.update(data: data)
-        }
-        return hasher.finalize().map { String(format: "%02x", $0) }.joined()
     }
 
     private func generateTitle(item: NSPasteboardItem, types: [NSPasteboard.PasteboardType]) -> String {
