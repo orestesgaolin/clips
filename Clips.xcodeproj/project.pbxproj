@@ -16,6 +16,7 @@
 		657A6A124BA9FFD522E2CAF3 /* Clips.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2F8E082261FDECBB9A9F7263 /* Clips.xcdatamodeld */; };
 		6E36A22A6B85D160587CD21B /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE282E4477DE51D94C17F0E0 /* Preferences.swift */; };
 		7100404DE34F26DABA46C6D2 /* ClipsMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95AD5C2FE25E8DE417255763 /* ClipsMenu.swift */; };
+		78308E7FCDCA5D9E8A89E198 /* ClipboardMonitorDuplicateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 294B2338F214B470361B4AFE /* ClipboardMonitorDuplicateTests.swift */; };
 		8BE6565B070B19B538BB9405 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC315F1F35329A3476CB582 /* AppDelegate.swift */; };
 		8D6BDAE6841AF902C616F9B6 /* HotKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB8CCDA63270543DAD8184E /* HotKeyManager.swift */; };
 		ABE75DF850B22034031240BE /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = A2927DBC6131A3D53F4FDD7B /* AppIcon.icon */; };
@@ -27,9 +28,21 @@
 		FEB3E20864AAA42DAB2AE886 /* ClipsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8F8A5AA669B86E2B2B2356 /* ClipsApp.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		3D7B303575FB2BE7BB2472E3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 86AC413A758F3A60A54ACC64 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0812FBFA88C820A6D233A824;
+			remoteInfo = Clips;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		07EBBA0360E27B439FE55712 /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
+		14E7AB9CFB6316A0BB96F76D /* ClipsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClipsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FDB9C037B0A90BF0ADA8254 /* ClipboardMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardMonitor.swift; sourceTree = "<group>"; };
+		294B2338F214B470361B4AFE /* ClipboardMonitorDuplicateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardMonitorDuplicateTests.swift; sourceTree = "<group>"; };
 		4222E3E6ADAE0F81C4239977 /* Clips.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Clips.xcdatamodel; sourceTree = "<group>"; };
 		634E63EC4DEEA302149BFD9D /* PreferencesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
 		6EAB23D4B69123C987AB5BFB /* StatusBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarController.swift; sourceTree = "<group>"; };
@@ -85,6 +98,7 @@
 			isa = PBXGroup;
 			children = (
 				9422A98EBD66A92C0F8C343E /* Clips */,
+				8CA20E45F8DEFD4044C327FF /* ClipsTests */,
 				A88CBC32590D2EA18FD8A3F9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -97,6 +111,14 @@
 				2F8E082261FDECBB9A9F7263 /* Clips.xcdatamodeld */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		8CA20E45F8DEFD4044C327FF /* ClipsTests */ = {
+			isa = PBXGroup;
+			children = (
+				294B2338F214B470361B4AFE /* ClipboardMonitorDuplicateTests.swift */,
+			);
+			path = ClipsTests;
 			sourceTree = "<group>";
 		};
 		9422A98EBD66A92C0F8C343E /* Clips */ = {
@@ -117,6 +139,7 @@
 			isa = PBXGroup;
 			children = (
 				AF95FEFF0C2DAD4015A7A7DB /* Clips.app */,
+				14E7AB9CFB6316A0BB96F76D /* ClipsTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -163,6 +186,24 @@
 			productReference = AF95FEFF0C2DAD4015A7A7DB /* Clips.app */;
 			productType = "com.apple.product-type.application";
 		};
+		4493B952505765D2FF3C122A /* ClipsTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 72B641EC927BE55313469FC7 /* Build configuration list for PBXNativeTarget "ClipsTests" */;
+			buildPhases = (
+				BC5CEA6115BD0C52978C8A29 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				28D3C6BE6B3B5F64388F447E /* PBXTargetDependency */,
+			);
+			name = ClipsTests;
+			packageProductDependencies = (
+			);
+			productName = ClipsTests;
+			productReference = 14E7AB9CFB6316A0BB96F76D /* ClipsTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -196,6 +237,7 @@
 			projectRoot = "";
 			targets = (
 				0812FBFA88C820A6D233A824 /* Clips */,
+				4493B952505765D2FF3C122A /* ClipsTests */,
 			);
 		};
 /* End PBXProject section */
@@ -235,9 +277,45 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BC5CEA6115BD0C52978C8A29 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				78308E7FCDCA5D9E8A89E198 /* ClipboardMonitorDuplicateTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		28D3C6BE6B3B5F64388F447E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0812FBFA88C820A6D233A824 /* Clips */;
+			targetProxy = 3D7B303575FB2BE7BB2472E3 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		63A4117CCD5CD2E31A223966 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 9JYPC6W7B2;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.roszkowski.ClipsTests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Clips.app/Contents/MacOS/Clips";
+			};
+			name = Release;
+		};
 		A802C663FFD621A032FC0515 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -357,6 +435,26 @@
 			};
 			name = Release;
 		};
+		DFFB8CE09C294100A7C5465C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 9JYPC6W7B2;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.roszkowski.ClipsTests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Clips.app/Contents/MacOS/Clips";
+			};
+			name = Debug;
+		};
 		F11FAA3FF33F565185766623 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -426,6 +524,15 @@
 			buildConfigurations = (
 				A802C663FFD621A032FC0515 /* Debug */,
 				DE23E4BC32AAA025C80B1139 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		72B641EC927BE55313469FC7 /* Build configuration list for PBXNativeTarget "ClipsTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DFFB8CE09C294100A7C5465C /* Debug */,
+				63A4117CCD5CD2E31A223966 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

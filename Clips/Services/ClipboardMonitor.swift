@@ -54,17 +54,22 @@ final class ClipboardMonitor {
         let hash = computeHash(representations)
         let context = persistence.context
 
+        // Check for existing entry with this hash
         let request = ClipboardEntry.fetchRequest()
         request.predicate = NSPredicate(format: "contentHash == %@", hash)
         request.fetchLimit = 1
 
-        if let existing = try? context.fetch(request).first {
-            if Preferences.pastingMovesToTop {
-                existing.createdAt = Date()
-                persistence.save()
-                NotificationCenter.default.post(name: .clipboardDidChange, object: nil)
+        do {
+            if let existing = try context.fetch(request).first {
+                if Preferences.pastingMovesToTop {
+                    existing.createdAt = Date()
+                    persistence.save()
+                    NotificationCenter.default.post(name: .clipboardDidChange, object: nil)
+                }
+                return
             }
-            return
+        } catch {
+            print("Clipboard fetch error: \(error)")
         }
 
         let entry = ClipboardEntry(context: context)

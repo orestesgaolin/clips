@@ -55,3 +55,17 @@ targets:
     dependencies:
       - package: Sparkle
         product: Sparkle
+
+  ClipsTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: ClipsTests
+    dependencies:
+      - target: Clips
+    settings:
+      base:
+        CODE_SIGN_STYLE: Manual
+        DEVELOPMENT_TEAM: 9JYPC6W7B2
+        SWIFT_VERSION: "5"
+        GENERATE_INFOPLIST_FILE: YES
