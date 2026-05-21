@@ -12,7 +12,7 @@ open Clips.xcodeproj
 
 GitHub Actions now drives releases from version tags (`v*`) with:
 
-- automatic code signing (Developer ID, automatic provisioning)
+- manual code signing (Developer ID certificate imported from secrets)
 - Apple notarization and stapling
 - Sparkle appcast generation and publishing via GitHub Pages
 - changelog generation via `changelog_cli`
