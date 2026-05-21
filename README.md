@@ -4,6 +4,14 @@
   <img src="./docs/icon.png" width="250">
 </div>
 
+<!-- Download button -->
+<div align="center">
+  <a href="https://github.com/orestesgaolin/clips/releases/latest" target="_blank">
+    Download latest release</br>
+    <img src="https://img.shields.io/github/v/release/orestesgaolin/clips" alt="Download ">
+  </a>
+</div>
+
 A lightweight macOS clipboard manager that lives in your menu bar.
 
 ## Features
