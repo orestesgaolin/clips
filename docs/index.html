@@ -62,23 +62,33 @@
       transition: opacity 0.15s;
     }
     .btn:hover { opacity: 0.85; }
-    .btn-outline {
+    .btn-secondary {
       background: transparent;
-      border: 2px solid var(--border);
-      color: var(--fg);
-      margin-left: 12px;
+      color: var(--accent);
+      border: 2px solid var(--accent);
     }
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .source-link {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .source-link a { color: var(--muted); text-decoration: none; }
+    .source-link a:hover { text-decoration: underline; }
 
     /* Screenshot */
     .screenshot-section {
       background: var(--surface);
-      padding: 60px 24px;
+      padding: 20px 24px;
       text-align: center;
     }
     .screenshot-section img {
-      max-width: 320px;
-      border-radius: 16px;
-      box-shadow: 0 16px 48px rgba(0,0,0,0.18);
+      max-width: 420px;
     }
 
     /* Features */
@@ -124,8 +134,11 @@
     <img class="icon" src="icon.png" alt="Clips icon" />
     <h1>Clips</h1>
     <p class="tagline">A lightweight clipboard manager that lives in your menu bar—always ready, never in the way.</p>
-    <a class="btn" href="https://apps.apple.com/app/clips/id000000000" id="appstore-link">Download on the Mac App Store</a>
-    <a class="btn btn-outline" href="https://github.com/orestesgaolin/clips">View on GitHub</a>
+    <div class="cta-row">
+      <a class="btn" href="https://apps.apple.com/app/clips/id6772169904" id="appstore-link">Download on the Mac App Store</a>
+      <a class="btn btn-secondary" href="https://github.com/orestesgaolin/clips/releases/latest">Latest Release on GitHub</a>
+    </div>
+    <p class="source-link"><a href="https://github.com/orestesgaolin/clips">View source on GitHub</a></p>
   </section>
 
   <section class="screenshot-section">
