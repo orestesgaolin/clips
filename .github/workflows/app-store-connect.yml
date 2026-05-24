@@ -14,12 +14,15 @@ on:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 env:
   APP_NAME: Clips
   SCHEME: ClipsAppStore
   PROJECT_FILE: Clips.xcodeproj
   BUNDLE_ID: dev.roszkowski.clips
+  PAGES_BASE_URL: https://roszkowski.dev/clips
 
 jobs:
   upload:
@@ -49,7 +52,15 @@ jobs:
       - name: Import certificate
         run: |
           CERT_PATH="$RUNNER_TEMP/certificate.p12"
-          echo "${{ secrets.MACOS_APP_STORE_CERTIFICATE_P12 }}" | base64 --decode > "$CERT_PATH"
+          printf '%s' "${{ secrets.MACOS_APP_STORE_CERTIFICATE_P12 }}" | base64 --decode > "$CERT_PATH"
+
+          if ! openssl pkcs12 -in "$CERT_PATH" \
+            -passin "pass:${{ secrets.MACOS_APP_STORE_CERTIFICATE_PWD }}" \
+            -nocerts -nodes 2>/dev/null | grep -q "BEGIN .*PRIVATE KEY"; then
+            echo "The MACOS_APP_STORE_CERTIFICATE_P12 secret does not contain a private key, or MACOS_APP_STORE_CERTIFICATE_PWD is incorrect."
+            echo "Re-export the Apple Distribution certificate from Keychain Access as a .p12 including the private key, then update both secrets."
+            exit 1
+          fi
 
           KEYCHAIN_PATH="$RUNNER_TEMP/signing.keychain-db"
           KEYCHAIN_PASSWORD=$(openssl rand -base64 32)
@@ -65,7 +76,12 @@ jobs:
           security list-keychains -d user -s "$KEYCHAIN_PATH" $EXISTING_KEYCHAINS
           security default-keychain -d user -s "$KEYCHAIN_PATH"
           security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+
+          if ! security find-identity -v -p codesigning "$KEYCHAIN_PATH" | grep -Eq '[1-9][0-9]* valid identities found'; then
+            echo "The imported .p12 did not produce a usable code-signing identity in the temporary keychain."
+            echo "Verify that the exported Apple Distribution certificate includes its private key and matches MACOS_APP_STORE_CERTIFICATE_PWD."
+            exit 1
+          fi
 
       - name: Setup signing
         run: |
@@ -144,3 +160,54 @@ jobs:
             -authenticationKeyPath "$ASC_KEY_PATH" \
             -authenticationKeyID "${{ secrets.APP_STORE_CONNECT_KEY_ID }}" \
             -authenticationKeyIssuerID "${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}"
+
+      - name: Prepare Pages site
+        run: |
+          SITE_DIR="$RUNNER_TEMP/site"
+          mkdir -p "$SITE_DIR/updates"
+
+          if [ -d docs ]; then
+            cp -R docs/. "$SITE_DIR"
+          fi
+
+          APPCAST_URL="${PAGES_BASE_URL}/appcast.xml"
+          APPCAST_PATH="$SITE_DIR/appcast.xml"
+
+          APPCAST_STATUS=$(curl --silent --show-error --location \
+            --write-out '%{http_code}' \
+            --output "$APPCAST_PATH" \
+            "$APPCAST_URL")
+
+          if [ "$APPCAST_STATUS" = "200" ]; then
+            grep -o 'https://[^<"]*' "$APPCAST_PATH" \
+              | grep '/updates/' \
+              | while IFS= read -r asset_url; do
+                  asset_name=$(basename "$asset_url")
+                  curl --fail --silent --show-error --location "$asset_url" \
+                    --output "$SITE_DIR/updates/$asset_name"
+                done
+          elif [ "$APPCAST_STATUS" = "404" ]; then
+            rm -f "$APPCAST_PATH"
+            echo "No existing appcast found at $APPCAST_URL; publishing docs only."
+          else
+            echo "Failed to preserve existing appcast from $APPCAST_URL (HTTP $APPCAST_STATUS)."
+            exit 1
+          fi
+
+          touch "$SITE_DIR/.nojekyll"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/site
+
+  deploy_pages:
+    runs-on: ubuntu-latest
+    needs: upload
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

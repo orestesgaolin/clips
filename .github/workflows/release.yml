@@ -171,12 +171,16 @@ jobs:
 
       - name: Generate Sparkle appcast
         run: |
-          mkdir -p "$UPDATES_DIR" "$SITE_DIR/updates"
+          mkdir -p "$UPDATES_DIR" "$SITE_DIR" "$SITE_DIR/updates"
 
           # shellcheck disable=SC2153
           RELEASE_ZIP="$RELEASE_DIR/${APP_NAME}-${VERSION}.zip"
           RELEASE_NOTES="$RUNNER_TEMP/RELEASE_NOTES.md"
           UPDATE_NOTES="$UPDATES_DIR/${APP_NAME}-${VERSION}.md"
+
+          if [ -d docs ]; then
+            cp -R docs/. "$SITE_DIR"
+          fi
 
           cp "$RELEASE_ZIP" "$UPDATES_DIR/${APP_NAME}-${VERSION}.zip"
           cp "$RELEASE_NOTES" "$UPDATE_NOTES"
@@ -190,9 +194,7 @@ jobs:
           cp "$UPDATES_DIR/appcast.xml" "$SITE_DIR/appcast.xml"
           cp "$UPDATE_NOTES" "$SITE_DIR/updates/${APP_NAME}-${VERSION}.md"
           cp "$UPDATE_NOTES" "$SITE_DIR/updates/latest.md"
-          if [ -f docs/updates/index.html ]; then
-            cp docs/updates/index.html "$SITE_DIR/index.html"
-          fi
+          touch "$SITE_DIR/.nojekyll"
 
       - name: Validate generated appcast
         run: |
