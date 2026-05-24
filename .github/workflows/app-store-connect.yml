@@ -107,7 +107,7 @@ jobs:
             CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
             DEVELOPMENT_TEAM="${{ secrets.APPLE_DEVELOPER_TEAM_ID }}" \
             CODE_SIGN_IDENTITY="${{ secrets.MACOS_APP_STORE_CERTIFICATE_NAME }}" \
-            "PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]=${{ secrets.MACOS_APP_STORE_PROVISIONING_PROFILE_NAME }}" \
+            PROVISIONING_PROFILE_SPECIFIER="${{ secrets.MACOS_APP_STORE_PROVISIONING_PROFILE_NAME }}" \
             clean archive
 
       - name: Validate App Store archive
