@@ -7,24 +7,41 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		05DE801F1F8311B9A4741FB8 /* ColorDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2C8982DDA5FAFA4635AA /* ColorDetector.swift */; };
 		0D4F43F48A0960476AC26751 /* ShortcutRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ED04AB5B52CBB4B7F78D6FA /* ShortcutRecorderView.swift */; };
 		2734DBBD2DCCDA767A78FB0D /* StatusBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EAB23D4B69123C987AB5BFB /* StatusBarController.swift */; };
 		29AAD27174F5D55BE9990A4F /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = F13676BDD4E0991BC05DC24A /* Sparkle */; };
 		3C464A5695147994F9C1A881 /* ClipboardEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85043B2EF36DC5312EE6D02C /* ClipboardEntry.swift */; };
 		3E95C989E54C137A7CA41C42 /* ClipboardRepresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D07C5C619B27C5C4F80FF3AF /* ClipboardRepresentation.swift */; };
 		427C91953C2C01998904A730 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31711827958BC4359841493 /* PersistenceController.swift */; };
+		435DDA7DA54DC7520B422726 /* Clips.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2F8E082261FDECBB9A9F7263 /* Clips.xcdatamodeld */; };
 		657A6A124BA9FFD522E2CAF3 /* Clips.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2F8E082261FDECBB9A9F7263 /* Clips.xcdatamodeld */; };
 		6E36A22A6B85D160587CD21B /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE282E4477DE51D94C17F0E0 /* Preferences.swift */; };
+		707DD006743DC78265BE014F /* ClipboardMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FDB9C037B0A90BF0ADA8254 /* ClipboardMonitor.swift */; };
 		7100404DE34F26DABA46C6D2 /* ClipsMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95AD5C2FE25E8DE417255763 /* ClipsMenu.swift */; };
 		78308E7FCDCA5D9E8A89E198 /* ClipboardMonitorDuplicateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 294B2338F214B470361B4AFE /* ClipboardMonitorDuplicateTests.swift */; };
+		7CEB0C0D7E3B410533CEA95F /* StatusBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EAB23D4B69123C987AB5BFB /* StatusBarController.swift */; };
+		7EC1E1E4121BB1B4327D3E18 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC315F1F35329A3476CB582 /* AppDelegate.swift */; };
+		8511EAE86A730C370EFEC1B1 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31711827958BC4359841493 /* PersistenceController.swift */; };
 		8BE6565B070B19B538BB9405 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC315F1F35329A3476CB582 /* AppDelegate.swift */; };
 		8D6BDAE6841AF902C616F9B6 /* HotKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB8CCDA63270543DAD8184E /* HotKeyManager.swift */; };
+		969BC08F54D10EE5D1EB3209 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B916506F107E05FE526DC0C9 /* Assets.xcassets */; };
+		A30EE12236465CD7236C9BA3 /* ClipboardEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85043B2EF36DC5312EE6D02C /* ClipboardEntry.swift */; };
 		ABE75DF850B22034031240BE /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = A2927DBC6131A3D53F4FDD7B /* AppIcon.icon */; };
+		AF27D336CB60126F461AC45D /* ClipsMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95AD5C2FE25E8DE417255763 /* ClipsMenu.swift */; };
 		B06B1F6244E14F6A3B7396C3 /* ClipboardMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FDB9C037B0A90BF0ADA8254 /* ClipboardMonitor.swift */; };
+		B64BF36A80142163365DF628 /* HotKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB8CCDA63270543DAD8184E /* HotKeyManager.swift */; };
 		BC955DEED12E0EC83E26763D /* ColorDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48E2C8982DDA5FAFA4635AA /* ColorDetector.swift */; };
+		C346517B3C6E63930C867070 /* ClipsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8F8A5AA669B86E2B2B2356 /* ClipsApp.swift */; };
+		D173C236C2CF07D982C1CB1B /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07EBBA0360E27B439FE55712 /* PreferencesView.swift */; };
 		D9B98D07C724B0AE4CC1557C /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07EBBA0360E27B439FE55712 /* PreferencesView.swift */; };
+		E0EB1F54CDD5D4456BD819D2 /* ClipboardRepresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D07C5C619B27C5C4F80FF3AF /* ClipboardRepresentation.swift */; };
 		E503C807ADAD3C267CA26EBE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B916506F107E05FE526DC0C9 /* Assets.xcassets */; };
 		E89DB7D02B6B2A59A7C5E744 /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634E63EC4DEEA302149BFD9D /* PreferencesWindowController.swift */; };
+		F60EB0BFE59C4E454A62C2B5 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE282E4477DE51D94C17F0E0 /* Preferences.swift */; };
+		F84852CF42E6762E76713902 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = A2927DBC6131A3D53F4FDD7B /* AppIcon.icon */; };
+		F8ACA587F58E738D57224FA9 /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634E63EC4DEEA302149BFD9D /* PreferencesWindowController.swift */; };
+		FDA320E0B5211D66100AC80B /* ShortcutRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ED04AB5B52CBB4B7F78D6FA /* ShortcutRecorderView.swift */; };
 		FEB3E20864AAA42DAB2AE886 /* ClipsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8F8A5AA669B86E2B2B2356 /* ClipsApp.swift */; };
 /* End PBXBuildFile section */
 
@@ -40,10 +57,12 @@
 
 /* Begin PBXFileReference section */
 		07EBBA0360E27B439FE55712 /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
+		11906A651B3373663EC39189 /* ClipsAppStore.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClipsAppStore.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		14E7AB9CFB6316A0BB96F76D /* ClipsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClipsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FDB9C037B0A90BF0ADA8254 /* ClipboardMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardMonitor.swift; sourceTree = "<group>"; };
 		294B2338F214B470361B4AFE /* ClipboardMonitorDuplicateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardMonitorDuplicateTests.swift; sourceTree = "<group>"; };
 		4222E3E6ADAE0F81C4239977 /* Clips.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Clips.xcdatamodel; sourceTree = "<group>"; };
+		4B5A3441A7BFAC7977F56F9C /* AppStore.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AppStore.entitlements; sourceTree = "<group>"; };
 		634E63EC4DEEA302149BFD9D /* PreferencesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
 		6EAB23D4B69123C987AB5BFB /* StatusBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarController.swift; sourceTree = "<group>"; };
 		7ED04AB5B52CBB4B7F78D6FA /* ShortcutRecorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutRecorderView.swift; sourceTree = "<group>"; };
@@ -125,6 +144,7 @@
 			isa = PBXGroup;
 			children = (
 				A2927DBC6131A3D53F4FDD7B /* AppIcon.icon */,
+				4B5A3441A7BFAC7977F56F9C /* AppStore.entitlements */,
 				B916506F107E05FE526DC0C9 /* Assets.xcassets */,
 				50269984E1543D66B75EBF7A /* App */,
 				B191BE446D7650559B2BA1E6 /* Helpers */,
@@ -139,6 +159,7 @@
 			isa = PBXGroup;
 			children = (
 				AF95FEFF0C2DAD4015A7A7DB /* Clips.app */,
+				11906A651B3373663EC39189 /* ClipsAppStore.app */,
 				14E7AB9CFB6316A0BB96F76D /* ClipsTests.xctest */,
 			);
 			name = Products;
@@ -186,6 +207,24 @@
 			productReference = AF95FEFF0C2DAD4015A7A7DB /* Clips.app */;
 			productType = "com.apple.product-type.application";
 		};
+		22A3B3EF2102F1408512A373 /* ClipsAppStore */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8FE75CD1E2EEFC5A9E833E6A /* Build configuration list for PBXNativeTarget "ClipsAppStore" */;
+			buildPhases = (
+				C998B2CDAEAD0C75689C91AA /* Sources */,
+				CD7F3A143EC2EC75C359C2BF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ClipsAppStore;
+			packageProductDependencies = (
+			);
+			productName = ClipsAppStore;
+			productReference = 11906A651B3373663EC39189 /* ClipsAppStore.app */;
+			productType = "com.apple.product-type.application";
+		};
 		4493B952505765D2FF3C122A /* ClipsTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 72B641EC927BE55313469FC7 /* Build configuration list for PBXNativeTarget "ClipsTests" */;
@@ -215,7 +254,9 @@
 				TargetAttributes = {
 					0812FBFA88C820A6D233A824 = {
 						DevelopmentTeam = 9JYPC6W7B2;
-						ProvisioningStyle = Manual;
+					};
+					22A3B3EF2102F1408512A373 = {
+						DevelopmentTeam = 9JYPC6W7B2;
 					};
 					4493B952505765D2FF3C122A = {
 						DevelopmentTeam = 9JYPC6W7B2;
@@ -241,12 +282,22 @@
 			projectRoot = "";
 			targets = (
 				0812FBFA88C820A6D233A824 /* Clips */,
+				22A3B3EF2102F1408512A373 /* ClipsAppStore */,
 				4493B952505765D2FF3C122A /* ClipsTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		CD7F3A143EC2EC75C359C2BF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F84852CF42E6762E76713902 /* AppIcon.icon in Resources */,
+				969BC08F54D10EE5D1EB3209 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F17FA943E7C185ABB3F5D88B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -289,6 +340,28 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C998B2CDAEAD0C75689C91AA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7EC1E1E4121BB1B4327D3E18 /* AppDelegate.swift in Sources */,
+				A30EE12236465CD7236C9BA3 /* ClipboardEntry.swift in Sources */,
+				707DD006743DC78265BE014F /* ClipboardMonitor.swift in Sources */,
+				E0EB1F54CDD5D4456BD819D2 /* ClipboardRepresentation.swift in Sources */,
+				435DDA7DA54DC7520B422726 /* Clips.xcdatamodeld in Sources */,
+				C346517B3C6E63930C867070 /* ClipsApp.swift in Sources */,
+				AF27D336CB60126F461AC45D /* ClipsMenu.swift in Sources */,
+				05DE801F1F8311B9A4741FB8 /* ColorDetector.swift in Sources */,
+				B64BF36A80142163365DF628 /* HotKeyManager.swift in Sources */,
+				8511EAE86A730C370EFEC1B1 /* PersistenceController.swift in Sources */,
+				F60EB0BFE59C4E454A62C2B5 /* Preferences.swift in Sources */,
+				D173C236C2CF07D982C1CB1B /* PreferencesView.swift in Sources */,
+				F8ACA587F58E738D57224FA9 /* PreferencesWindowController.swift in Sources */,
+				FDA320E0B5211D66100AC80B /* ShortcutRecorderView.swift in Sources */,
+				7CEB0C0D7E3B410533CEA95F /* StatusBarController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -300,6 +373,33 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		579D5E265BCF47F63415508C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Clips/AppStore.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9JYPC6W7B2;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				INFOPLIST_FILE = Clips/AppStoreInfo.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.roszkowski.clips;
+				PRODUCT_NAME = Clips;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "Clips App Store";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "RELEASE APP_STORE";
+				SWIFT_VERSION = 5;
+			};
+			name = Release;
+		};
 		63A4117CCD5CD2E31A223966 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -463,8 +563,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9JYPC6W7B2;
@@ -505,6 +605,7 @@
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.roszkowski.clips;
 				PRODUCT_NAME = Clips;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = Clips;
 				SDKROOT = macosx;
 				SPARKLE_FEED_URL = "https://roszkowski.dev/clips/appcast.xml";
 				SPARKLE_PUBLIC_ED_KEY = "yQg1h/yuV8QalL0F9YlPd7NTJCf9kA9ZWXkkLimn3Mo=";
@@ -512,6 +613,32 @@
 				SWIFT_VERSION = 5;
 			};
 			name = Release;
+		};
+		FBBA529E2C0359100529FD5F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Clips/AppStore.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9JYPC6W7B2;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INFOPLIST_FILE = Clips/AppStoreInfo.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.roszkowski.clips.appstore.debug;
+				PRODUCT_NAME = Clips;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG APP_STORE";
+				SWIFT_VERSION = 5;
+			};
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
@@ -539,6 +666,15 @@
 			buildConfigurations = (
 				DFFB8CE09C294100A7C5465C /* Debug */,
 				63A4117CCD5CD2E31A223966 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		8FE75CD1E2EEFC5A9E833E6A /* Build configuration list for PBXNativeTarget "ClipsAppStore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FBBA529E2C0359100529FD5F /* Debug */,
+				579D5E265BCF47F63415508C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

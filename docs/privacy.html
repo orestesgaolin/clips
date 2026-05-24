@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy – Clips</title>
+  <style>
+    :root {
+      --accent: #007AFF;
+      --bg: #ffffff;
+      --fg: #1d1d1f;
+      --muted: #6e6e73;
+      --surface: #f5f5f7;
+      --border: #d2d2d7;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #000000;
+        --fg: #f5f5f7;
+        --muted: #a1a1a6;
+        --surface: #1c1c1e;
+        --border: #38383a;
+      }
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.7;
+      font-size: 1rem;
+    }
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 20px 24px;
+    }
+    header a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+    main {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 56px 24px 80px;
+    }
+    h1 { font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
+    .updated { color: var(--muted); font-size: 0.9rem; margin-bottom: 40px; }
+    h2 { font-size: 1.15rem; font-weight: 600; margin: 32px 0 8px; }
+    p { color: var(--fg); margin-bottom: 16px; }
+    ul { padding-left: 20px; margin-bottom: 16px; }
+    li { margin-bottom: 6px; }
+    a { color: var(--accent); }
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html">← Back to Clips</a>
+  </header>
+
+  <main>
+    <h1>Privacy Policy</h1>
+    <p class="updated">Last updated: May 2026</p>
+
+    <p>Clips ("the app") is developed by Dominik Roszkowski. This privacy policy explains what data the app handles and how.</p>
+
+    <h2>Data We Do Not Collect</h2>
+    <p>Clips does <strong>not</strong> collect, transmit, or share any personal data. Specifically:</p>
+    <ul>
+      <li>No analytics or usage tracking</li>
+      <li>No crash reporting sent to external servers</li>
+      <li>No advertising identifiers</li>
+      <li>No account or sign-in required</li>
+    </ul>
+
+    <h2>Clipboard Data</h2>
+    <p>Clips reads your clipboard to maintain a local history of copied items. This data is stored exclusively on your Mac using Core Data and never leaves your device. The app does not upload, sync, or otherwise transmit clipboard contents anywhere.</p>
+
+    <h2>Accessibility Permission</h2>
+    <p>Clips requests Accessibility access to simulate the paste keyboard shortcut on your behalf. This permission is used solely to paste selected items and for nothing else.</p>
+
+    <h2>Local Storage Only</h2>
+    <p>All preferences and clipboard history are stored locally in your macOS user account. Uninstalling the app removes all associated data.</p>
+
+    <h2>Third-Party Services</h2>
+    <p>Clips does not integrate with any third-party analytics, advertising, or data-sharing services.</p>
+
+    <h2>Children's Privacy</h2>
+    <p>The app does not knowingly collect data from anyone, including children under the age of 13.</p>
+
+    <h2>Changes to This Policy</h2>
+    <p>If this policy changes, the updated version will be published at this URL. Continued use of the app after changes constitutes acceptance of the updated policy.</p>
+
+    <h2>Contact</h2>
+    <p>Questions about this policy? Open an issue on <a href="https://github.com/orestesgaolin/clips/issues">GitHub</a> or reach out via the support page.</p>
+  </main>
+
+  <footer>
+    &copy; 2026 Dominik Roszkowski &nbsp;·&nbsp; <a href="index.html">Clips</a>
+  </footer>
+
+</body>
+</html>

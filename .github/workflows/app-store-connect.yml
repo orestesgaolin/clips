@@ -1,0 +1,130 @@
+name: App Store Connect
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Marketing version to upload, for example 1.0.0"
+        required: true
+        type: string
+      build:
+        description: "Build number. Defaults to the GitHub run number."
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  APP_NAME: Clips
+  SCHEME: ClipsAppStore
+  PROJECT_FILE: Clips.xcodeproj
+  BUNDLE_ID: dev.roszkowski.clips
+
+jobs:
+  upload:
+    runs-on: macos-26
+    environment: app-store-connect
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Build metadata
+        run: |
+          BUILD_NUMBER="${{ inputs.build }}"
+          if [ -z "$BUILD_NUMBER" ]; then
+            BUILD_NUMBER="${GITHUB_RUN_NUMBER}"
+          fi
+
+          {
+            echo "VERSION=${{ inputs.version }}"
+            echo "BUILD_NUMBER=$BUILD_NUMBER"
+            echo "ARCHIVE_PATH=$RUNNER_TEMP/${APP_NAME}-app-store.xcarchive"
+            echo "EXPORT_DIR=$RUNNER_TEMP/app-store-export"
+          } >> "$GITHUB_ENV"
+
+      - name: Install tools
+        run: brew install xcodegen
+
+      - uses: apple-actions/import-codesign-certs@v7
+        with:
+          p12-file-base64: ${{ secrets.MACOS_APP_STORE_CERTIFICATE_P12 }}
+          p12-password: ${{ secrets.MACOS_APP_STORE_CERTIFICATE_PWD }}
+
+      - name: Setup signing
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "${{ secrets.MACOS_APP_STORE_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode \
+            > ~/Library/MobileDevice/Provisioning\ Profiles/app-store.provisionprofile
+
+          KEY_PATH="$RUNNER_TEMP/AuthKey_${{ secrets.APP_STORE_CONNECT_KEY_ID }}.p8"
+          echo "${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}" | base64 --decode > "$KEY_PATH"
+          echo "ASC_KEY_PATH=$KEY_PATH" >> "$GITHUB_ENV"
+
+      - name: Generate project
+        run: xcodegen generate
+
+      - name: Archive App Store app
+        run: |
+          xcodebuild \
+            -project "$PROJECT_FILE" \
+            -scheme "$SCHEME" \
+            -configuration Release \
+            -destination "generic/platform=macOS" \
+            -archivePath "$ARCHIVE_PATH" \
+            MARKETING_VERSION="$VERSION" \
+            CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
+            DEVELOPMENT_TEAM="${{ secrets.APPLE_DEVELOPER_TEAM_ID }}" \
+            CODE_SIGN_IDENTITY="${{ secrets.MACOS_APP_STORE_CERTIFICATE_NAME }}" \
+            "PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]=${{ secrets.MACOS_APP_STORE_PROVISIONING_PROFILE_NAME }}" \
+            clean archive
+
+      - name: Validate App Store archive
+        run: |
+          APP_PATH="$ARCHIVE_PATH/Products/Applications/${APP_NAME}.app"
+          INFO_PLIST="$APP_PATH/Contents/Info.plist"
+
+          SHORT_VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$INFO_PLIST")
+          BUILD_VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$INFO_PLIST")
+
+          if [ "$SHORT_VERSION" != "$VERSION" ]; then
+            echo "Archived app short version mismatch: expected $VERSION, got $SHORT_VERSION"
+            exit 1
+          fi
+
+          if [ "$BUILD_VERSION" != "$BUILD_NUMBER" ]; then
+            echo "Archived app build version mismatch: expected $BUILD_NUMBER, got $BUILD_VERSION"
+            exit 1
+          fi
+
+          if /usr/libexec/PlistBuddy -c "Print :SUFeedURL" "$INFO_PLIST" >/dev/null 2>&1; then
+            echo "App Store archive must not include Sparkle SUFeedURL"
+            exit 1
+          fi
+
+          if /usr/libexec/PlistBuddy -c "Print :SUPublicEDKey" "$INFO_PLIST" >/dev/null 2>&1; then
+            echo "App Store archive must not include Sparkle SUPublicEDKey"
+            exit 1
+          fi
+
+          if [ -e "$APP_PATH/Contents/Frameworks/Sparkle.framework" ]; then
+            echo "App Store archive must not embed Sparkle.framework"
+            exit 1
+          fi
+
+      - name: Upload to App Store Connect
+        run: |
+          EXPORT_PLIST="$RUNNER_TEMP/AppStoreExportOptions.plist"
+          cp .github/AppStoreExportOptions.plist "$EXPORT_PLIST"
+          /usr/libexec/PlistBuddy -c "Set :signingCertificate ${{ secrets.MACOS_APP_STORE_CERTIFICATE_NAME }}" "$EXPORT_PLIST"
+          /usr/libexec/PlistBuddy -c "Set :teamID ${{ secrets.APPLE_DEVELOPER_TEAM_ID }}" "$EXPORT_PLIST"
+          /usr/libexec/PlistBuddy -c "Set :provisioningProfiles:${BUNDLE_ID} ${{ secrets.MACOS_APP_STORE_PROVISIONING_PROFILE_NAME }}" "$EXPORT_PLIST"
+
+          mkdir -p "$EXPORT_DIR"
+          xcodebuild -exportArchive \
+            -archivePath "$ARCHIVE_PATH" \
+            -exportPath "$EXPORT_DIR" \
+            -exportOptionsPlist "$EXPORT_PLIST" \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyID "${{ secrets.APP_STORE_CONNECT_KEY_ID }}" \
+            -authenticationKeyIssuerID "${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}"
