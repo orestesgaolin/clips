@@ -75,7 +75,6 @@ jobs:
           EXISTING_KEYCHAINS=$(security list-keychains -d user | tr -d '"')
           security list-keychains -d user -s "$KEYCHAIN_PATH" $EXISTING_KEYCHAINS
           security default-keychain -d user -s "$KEYCHAIN_PATH"
-          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
 
           if ! security find-identity -v -p codesigning "$KEYCHAIN_PATH" | grep -Eq '[1-9][0-9]* valid identities found'; then
             echo "The imported .p12 did not produce a usable code-signing identity in the temporary keychain."
