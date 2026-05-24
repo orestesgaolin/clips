@@ -1,3 +1,4 @@
+import AppKit
 import Foundation
 import Carbon.HIToolbox
 
@@ -46,6 +47,31 @@ enum Preferences {
         }
     }
 
+    enum MenuNumberShortcutModifier: String, CaseIterable {
+        case none
+        case command
+        case control
+        case shift
+
+        var displayName: String {
+            switch self {
+            case .none: return "None"
+            case .command: return "Command + Number"
+            case .control: return "Control + Number"
+            case .shift: return "Shift + Number"
+            }
+        }
+
+        var modifierFlags: NSEvent.ModifierFlags {
+            switch self {
+            case .none: return []
+            case .command: return .command
+            case .control: return .control
+            case .shift: return .shift
+            }
+        }
+    }
+
     static var launchAtLogin: Bool {
         get { defaults.bool(forKey: "launchAtLogin") }
         set { defaults.set(newValue, forKey: "launchAtLogin") }
@@ -67,6 +93,11 @@ enum Preferences {
     static var iconStyle: IconStyle {
         get { IconStyle(rawValue: defaults.string(forKey: "iconStyle") ?? "") ?? .shown }
         set { defaults.set(newValue.rawValue, forKey: "iconStyle") }
+    }
+
+    static var menuNumberShortcutModifier: MenuNumberShortcutModifier {
+        get { MenuNumberShortcutModifier(rawValue: defaults.string(forKey: "menuNumberShortcutModifier") ?? "") ?? .none }
+        set { defaults.set(newValue.rawValue, forKey: "menuNumberShortcutModifier") }
     }
 
     static var inlineItemCount: Int {

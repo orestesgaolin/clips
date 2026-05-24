@@ -120,6 +120,7 @@ private struct GeneralTab: View {
     @AppStorage("maxHistory") private var maxHistory = 100
     @AppStorage("sortOrder") private var sortOrder = "newest"
     @AppStorage("pastingMovesToTop") private var pastingMovesToTop = true
+    @AppStorage("menuNumberShortcutModifier") private var menuNumberShortcutModifier = Preferences.MenuNumberShortcutModifier.none.rawValue
 
     var body: some View {
         Form {
@@ -128,12 +129,13 @@ private struct GeneralTab: View {
                     toggleLoginItem(enabled: newValue)
                 }
 
-            HStack {
-                Text("Max history:")
-                TextField("", value: $maxHistory, format: .number)
-                    .frame(width: 80)
-                Stepper("", value: $maxHistory, in: 10...10000, step: 10)
-                    .labelsHidden()
+            LabeledContent("Max history:") {
+                HStack(spacing: 8) {
+                    TextField("", value: $maxHistory, format: .number)
+                        .frame(maxWidth: 80)
+                    Stepper("", value: $maxHistory, in: 10...10000, step: 10)
+                        .labelsHidden()
+                }
             }
 
             Picker("Sort order:", selection: $sortOrder) {
@@ -144,9 +146,20 @@ private struct GeneralTab: View {
 
             Toggle("Pasting moves item to top", isOn: $pastingMovesToTop)
 
-            HStack {
-                Text("Paste shortcut:")
+            Divider()
+
+            LabeledContent("Paste shortcut:") {
                 ShortcutRecorderView()
+            }
+
+            Picker("Select item shortcut:", selection: $menuNumberShortcutModifier) {
+                ForEach(Preferences.MenuNumberShortcutModifier.allCases, id: \.self) { modifier in
+                    Text(modifier.displayName).tag(modifier.rawValue)
+                }
+            }
+            .pickerStyle(.menu)
+            .onChange(of: menuNumberShortcutModifier) { _, _ in
+                NotificationCenter.default.post(name: .menuShortcutPreferencesDidChange, object: nil)
             }
           
             Divider()

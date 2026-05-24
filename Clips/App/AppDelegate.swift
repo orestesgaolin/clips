@@ -75,4 +75,5 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
 extension Notification.Name {
     static let hotKeyDidChange = Notification.Name("HotKeyDidChange")
+    static let menuShortcutPreferencesDidChange = Notification.Name("MenuShortcutPreferencesDidChange")
 }

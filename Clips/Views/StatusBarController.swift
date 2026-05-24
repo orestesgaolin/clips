@@ -7,6 +7,9 @@ final class StatusBarController: NSObject, NSMenuDelegate {
     private let monitor: ClipboardMonitor
     private var statusItem: NSStatusItem?
     private var observer: NSObjectProtocol?
+    private var menuShortcutObserver: NSObjectProtocol?
+    private var activeMenu: NSMenu?
+    private var menuKeyMonitor: Any?
     private var preferencesWindowController: PreferencesWindowController?
     private var aboutWindowController: AboutWindowController?
 
@@ -39,6 +42,14 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         ) { [weak self] _ in
             self?.statusItem?.menu = self?.buildMenu()
         }
+
+        menuShortcutObserver = NotificationCenter.default.addObserver(
+            forName: .menuShortcutPreferencesDidChange,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.statusItem?.menu = self?.buildMenu()
+        }
     }
 
     func showMenuAtCursor() {
@@ -50,13 +61,14 @@ final class StatusBarController: NSObject, NSMenuDelegate {
 
     private func buildMenu() -> NSMenu {
         let menu = ClipsMenu()
+        menu.delegate = self
 
         let entries = fetchEntries()
         let inlineCount = min(Preferences.inlineItemCount, entries.count)
 
         for i in 0..<inlineCount {
             let num = (i + 1) % 10
-            let item = menuItem(for: entries[i], prefix: "\(num). ")
+            let item = menuItem(for: entries[i], prefix: "\(num). ", shortcutNumber: num)
             menu.addItem(item)
         }
 
@@ -76,12 +88,18 @@ final class StatusBarController: NSObject, NSMenuDelegate {
 
             let rangeStart = start + 1
             let rangeEnd = end
-            let folderItem = NSMenuItem(title: "\(rangeStart) - \(rangeEnd)", action: nil, keyEquivalent: "")
+            let shortcutNumber = inlineCount + folderIndex + 1
+            let folderItem = NSMenuItem(
+                title: "\(shortcutNumber). \(rangeStart) - \(rangeEnd)",
+                action: nil,
+                keyEquivalent: ""
+            )
 
             let submenu = ClipsMenu()
+            submenu.delegate = self
             for (subIndex, i) in (start..<end).enumerated() {
                 let num = (subIndex + 1) % 10
-                let item = menuItem(for: entries[i], prefix: "\(num). ")
+                let item = menuItem(for: entries[i], prefix: "\(num). ", shortcutNumber: num)
                 submenu.addItem(item)
             }
             menu.addItem(folderItem)
@@ -114,11 +132,12 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         return menu
     }
 
-    private func menuItem(for entry: ClipboardEntry, prefix: String = "") -> NSMenuItem {
+    private func menuItem(for entry: ClipboardEntry, prefix: String = "", shortcutNumber: Int? = nil) -> NSMenuItem {
         let title = prefix + entry.title
         let item = NSMenuItem(title: title, action: #selector(pasteEntry(_:)), keyEquivalent: "")
         item.target = self
         item.representedObject = entry.objectID
+        item.tag = shortcutNumber ?? 0
 
         if let plainText = entry.plainText {
             let maxLen = Preferences.tooltipLength
@@ -152,6 +171,44 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         image.draw(in: NSRect(origin: .zero, size: newSize))
         scaled.unlockFocus()
         return scaled
+    }
+
+    // MARK: - Menu Shortcuts
+
+    func menuWillOpen(_ menu: NSMenu) {
+        activeMenu = menu
+        installMenuKeyMonitorIfNeeded()
+    }
+
+    func menuDidClose(_ menu: NSMenu) {
+        guard activeMenu === menu else { return }
+        activeMenu = nil
+        removeMenuKeyMonitor()
+    }
+
+    private func installMenuKeyMonitorIfNeeded() {
+        guard menuKeyMonitor == nil else { return }
+        menuKeyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            self?.handleMenuShortcut(event) == true ? nil : event
+        }
+    }
+
+    private func removeMenuKeyMonitor() {
+        guard let menuKeyMonitor else { return }
+        NSEvent.removeMonitor(menuKeyMonitor)
+        self.menuKeyMonitor = nil
+    }
+
+    private func handleMenuShortcut(_ event: NSEvent) -> Bool {
+        let shortcutModifier = Preferences.menuNumberShortcutModifier
+        guard shortcutModifier != .none else { return false }
+        guard event.modifierFlags.intersection([.command, .control, .option, .shift]) == shortcutModifier.modifierFlags else { return false }
+        guard let digit = event.charactersIgnoringModifiers?.first?.wholeNumberValue else { return false }
+        guard let item = activeMenu?.items.first(where: { $0.representedObject is NSManagedObjectID && $0.tag == digit }) else { return false }
+
+        activeMenu?.cancelTracking()
+        pasteEntry(item)
+        return true
     }
 
     // MARK: - Actions
