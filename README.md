@@ -12,10 +12,9 @@
   </a>
 </div>
 
-
 <div align="center">
   <a href="https://apps.apple.com/us/app/clips-clipboard-manager/id6772169904?mt=12&itscg=30200&itsct=apps_box_badge&mttnsubad=6772169904" style="display: inline-block;">
-    <img src="https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/en-us?releaseDate=1779753600" alt="Download on the App Store" style="width: 180px; vertical-align: middle; object-fit: contain;" />
+    <img src="https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/en-us?releaseDate=1779753600" alt="Download on the App Store" style="width: 246px; height: 82px; vertical-align: middle; object-fit: contain;" />
   </a>
 </div>
 
