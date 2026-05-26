@@ -50,28 +50,67 @@
       max-width: 480px;
       margin: 12px auto 32px;
     }
-    .btn {
-      display: inline-block;
-      background: var(--accent);
-      color: #fff;
+    .github-download {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      width: 246px;
+      height: 82px;
+      background: #111111;
+      color: #ffffff;
       text-decoration: none;
-      padding: 14px 32px;
-      border-radius: 980px;
-      font-size: 1rem;
-      font-weight: 600;
-      transition: opacity 0.15s;
+      padding: 12px 18px;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.16);
+      transition: opacity 0.15s, transform 0.15s;
     }
-    .btn:hover { opacity: 0.85; }
-    .btn-secondary {
-      background: transparent;
-      color: var(--accent);
-      border: 2px solid var(--accent);
+    .github-download:hover {
+      opacity: 0.88;
+      transform: translateY(-1px);
+    }
+    .github-download svg {
+      flex: 0 0 auto;
+      width: 36px;
+      height: 36px;
+    }
+    .github-download span {
+      display: block;
+      text-align: left;
+      line-height: 1.12;
+    }
+    .github-download .eyebrow {
+      font-size: 0.78rem;
+      font-weight: 500;
+      opacity: 0.78;
+    }
+    .github-download .label {
+      margin-top: 3px;
+      font-size: 1.36rem;
+      font-weight: 700;
+    }
+    .appstore-badge {
+      display: inline-block;
+      line-height: 0;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .appstore-badge:hover {
+      opacity: 0.88;
+      transform: translateY(-1px);
+    }
+    .appstore-badge img {
+      width: 246px;
+      height: 82px;
+      vertical-align: middle;
+      object-fit: contain;
     }
     .cta-row {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
       justify-content: center;
+      align-items: center;
       margin-bottom: 16px;
     }
     .source-link {
@@ -100,7 +139,6 @@
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 40px;
     }
-    .feature { }
     .feature .icon { font-size: 2rem; margin-bottom: 10px; }
     .feature h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; }
     .feature p { color: var(--muted); font-size: 0.95rem; }
@@ -133,10 +171,22 @@
   <section class="hero">
     <img class="icon" src="icon.png" alt="Clips icon" />
     <h1>Clips</h1>
-    <p class="tagline">A lightweight clipboard manager that lives in your menu bar—always ready, never in the way.</p>
+    <p class="tagline">A lightweight clipboard manager that stays in your menu bar</p>
     <div class="cta-row">
-      <a class="btn" href="https://apps.apple.com/app/clips/id6772169904" id="appstore-link">Download on the Mac App Store</a>
-      <a class="btn btn-secondary" href="https://github.com/orestesgaolin/clips/releases/latest">Latest Release on GitHub</a>
+      <a class="appstore-badge" href="https://apps.apple.com/us/app/clips-clipboard-manager/id6772169904?mt=12&amp;itscg=30200&amp;itsct=apps_box_badge&amp;mttnsubad=6772169904" id="appstore-link">
+        <img src="https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/en-us?releaseDate=1779753600" alt="Download on the App Store" />
+      </a>
+      <a class="github-download" href="https://github.com/orestesgaolin/clips/releases/latest" aria-label="Download the latest Clips release from GitHub">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3v12" />
+          <path d="m7 10 5 5 5-5" />
+          <path d="M5 20h14" />
+        </svg>
+        <span>
+          <span class="eyebrow">Download from</span>
+          <span class="label">GitHub</span>
+        </span>
+      </a>
     </div>
     <p class="source-link"><a href="https://github.com/orestesgaolin/clips">View source on GitHub</a></p>
   </section>
@@ -149,7 +199,7 @@
     <div class="feature">
       <div class="icon">⌘</div>
       <h3>Global Hotkey</h3>
-      <p>Press <strong>⌘⇧V</strong> from anywhere to instantly open your clipboard history—no switching apps needed.</p>
+      <p>Press <strong>⌘⇧V</strong> from anywhere to instantly open your clipboard history - no switching apps needed.</p>
     </div>
     <div class="feature">
       <div class="icon">🖼</div>
@@ -159,7 +209,7 @@
     <div class="feature">
       <div class="icon">🔢</div>
       <h3>Quick Select</h3>
-      <p>Press 1–9 to paste any item immediately, or navigate through groups of older entries with ease.</p>
+      <p>Press 1-9 to paste any item immediately, or navigate through groups of older entries with ease.</p>
     </div>
     <div class="feature">
       <div class="icon">🔍</div>
@@ -174,7 +224,7 @@
     <div class="feature">
       <div class="icon">🔒</div>
       <h3>Private by Design</h3>
-      <p>Everything stays on your Mac. No accounts, no sync, no data collection—ever.</p>
+      <p>Everything stays on your Mac. No accounts, no sync, no data collection - ever.</p>
     </div>
   </section>
 
