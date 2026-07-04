@@ -58,6 +58,23 @@ git push origin v1.0.0
 
 The `Release` workflow will build, sign, notarize, publish release assets, and deploy Sparkle metadata to GitHub Pages.
 
+### Regenerating the Sparkle appcast
+
+The release workflow generates release notes with `changelog_cli`, copies the notarized zip and release notes into an updates directory, and runs Sparkle's `generate_appcast` with `SPARKLE_PRIVATE_ED_KEY`. The generated `appcast.xml` is published at the GitHub Pages root, and the release notes are published under `/updates/`.
+
+To regenerate the appcast for an existing release, run the `Regenerate Appcast` workflow manually. Provide the release tag that contains `Clips-<version>.zip`, the changelog end ref, and optionally a changelog start ref. When `version` is empty, the workflow derives it from the release tag by removing a leading `v`.
+
+For example, to rebuild the notes and appcast for `v1.0.0` using commits after `v0.9.0` through `v1.0.0`, use:
+
+```text
+release_tag: v1.0.0
+version: 1.0.0
+changelog_start_ref: v0.9.0
+changelog_end_ref: v1.0.0
+```
+
+The workflow downloads the existing release zip, regenerates `appcast.xml`, updates the GitHub release notes and `appcast.xml` release asset, and redeploys the Pages site.
+
 ### App Store Connect upload
 
 Run the `App Store Connect` workflow manually with a marketing version. It archives the `ClipsAppStore` scheme, uploads the signed app to App Store Connect, and validates that the archive does not contain Sparkle metadata or `Sparkle.framework`. The App Store target uses `Clips/AppStore.entitlements` to enable the App Sandbox required by Mac App Store distribution.

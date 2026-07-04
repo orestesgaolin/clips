@@ -1,0 +1,171 @@
+name: Regenerate Appcast
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Existing GitHub release tag that contains Clips-<version>.zip, for example v1.0.0"
+        required: true
+        type: string
+      version:
+        description: "Marketing version. Defaults to release_tag without a leading v."
+        required: false
+        type: string
+      changelog_start_ref:
+        description: "Optional first commit/tag for release notes, for example v0.9.0"
+        required: false
+        type: string
+      changelog_end_ref:
+        description: "Last commit/tag for release notes, usually the release tag"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+env:
+  APP_NAME: Clips
+  PAGES_BASE_URL: https://roszkowski.dev/clips
+
+jobs:
+  regenerate_appcast:
+    runs-on: macos-26
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Build metadata
+        run: |
+          RELEASE_TAG="${{ inputs.release_tag }}"
+          VERSION="${{ inputs.version }}"
+          CHANGELOG_START_REF="${{ inputs.changelog_start_ref }}"
+          CHANGELOG_END_REF="${{ inputs.changelog_end_ref }}"
+
+          if [ -z "$VERSION" ]; then
+            VERSION="${RELEASE_TAG#v}"
+          fi
+
+          if [ -z "$VERSION" ]; then
+            echo "A version is required when release_tag does not contain one."
+            exit 1
+          fi
+
+          git rev-parse --verify "${CHANGELOG_END_REF}^{commit}" >/dev/null
+          if [ -n "$CHANGELOG_START_REF" ]; then
+            git rev-parse --verify "${CHANGELOG_START_REF}^{commit}" >/dev/null
+          fi
+
+          {
+            echo "RELEASE_TAG=$RELEASE_TAG"
+            echo "VERSION=$VERSION"
+            echo "CHANGELOG_START_REF=$CHANGELOG_START_REF"
+            echo "CHANGELOG_END_REF=$CHANGELOG_END_REF"
+            echo "SITE_DIR=$RUNNER_TEMP/site"
+            echo "UPDATES_DIR=$RUNNER_TEMP/updates"
+          } >> "$GITHUB_ENV"
+
+      - name: Install tools
+        run: |
+          SPARKLE_VER=2.9.2
+          brew trust --formula orestesgaolin/tap/changelog_cli
+          brew tap orestesgaolin/tap
+          brew install changelog_cli
+          mkdir -p "$RUNNER_TEMP/sparkle"
+          curl -Ls "https://github.com/sparkle-project/Sparkle/releases/download/${SPARKLE_VER}/Sparkle-${SPARKLE_VER}.tar.xz" \
+            | tar -xJ -C "$RUNNER_TEMP/sparkle"
+          chmod +x "$RUNNER_TEMP/sparkle/bin/"*
+
+      - name: Generate release notes
+        run: |
+          ARGS=(--end "$CHANGELOG_END_REF" --version "$VERSION" --output "$RUNNER_TEMP/RELEASE_NOTES.md")
+          if [ -n "$CHANGELOG_START_REF" ]; then
+            ARGS+=(--start "$CHANGELOG_START_REF")
+          fi
+          changelog_cli generate "${ARGS[@]}"
+
+      - name: Download release zip
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$UPDATES_DIR"
+          gh release download "$RELEASE_TAG" \
+            --pattern "${APP_NAME}-${VERSION}.zip" \
+            --dir "$UPDATES_DIR"
+
+          if [ ! -f "$UPDATES_DIR/${APP_NAME}-${VERSION}.zip" ]; then
+            echo "Release $RELEASE_TAG does not contain ${APP_NAME}-${VERSION}.zip"
+            exit 1
+          fi
+
+      - name: Generate Sparkle appcast
+        run: |
+          mkdir -p "$SITE_DIR" "$SITE_DIR/updates"
+          UPDATE_NOTES="$UPDATES_DIR/${APP_NAME}-${VERSION}.md"
+
+          if [ -d docs ]; then
+            cp -R docs/. "$SITE_DIR"
+          fi
+
+          cp "$RUNNER_TEMP/RELEASE_NOTES.md" "$UPDATE_NOTES"
+
+          echo "${{ secrets.SPARKLE_PRIVATE_ED_KEY }}" | "$RUNNER_TEMP/sparkle/bin/generate_appcast" \
+            --ed-key-file - \
+            --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/${RELEASE_TAG}/" \
+            --release-notes-url-prefix "${PAGES_BASE_URL}/updates/" \
+            "$UPDATES_DIR"
+
+          cp "$UPDATES_DIR/appcast.xml" "$SITE_DIR/appcast.xml"
+          cp "$UPDATE_NOTES" "$SITE_DIR/updates/${APP_NAME}-${VERSION}.md"
+          cp "$UPDATE_NOTES" "$SITE_DIR/updates/latest.md"
+          touch "$SITE_DIR/.nojekyll"
+
+      - name: Validate generated appcast
+        run: |
+          APPCAST_PATH="$SITE_DIR/appcast.xml"
+          SHORT_VERSION=$(awk -F'[><]' '/<sparkle:shortVersionString>/{print $3; exit}' "$APPCAST_PATH")
+          BUILD_VERSION=$(awk -F'[><]' '/<sparkle:version>/{print $3; exit}' "$APPCAST_PATH")
+          ENCLOSURE_URL=$(sed -n 's|.*url="\([^"]*\)".*|\1|p' "$APPCAST_PATH" | head -n1)
+
+          if [ "$SHORT_VERSION" != "$VERSION" ]; then
+            echo "Appcast short version mismatch: expected $VERSION, got $SHORT_VERSION"
+            exit 1
+          fi
+
+          if [ -z "$BUILD_VERSION" ]; then
+            echo "Appcast build version is empty"
+            exit 1
+          fi
+
+          EXPECTED_PREFIX="https://github.com/${{ github.repository }}/releases/download/${RELEASE_TAG}/"
+          if [[ "$ENCLOSURE_URL" != ${EXPECTED_PREFIX}* ]]; then
+            echo "Appcast enclosure URL mismatch: expected prefix $EXPECTED_PREFIX, got $ENCLOSURE_URL"
+            exit 1
+          fi
+
+      - name: Update GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release edit "$RELEASE_TAG" --notes-file "$RUNNER_TEMP/RELEASE_NOTES.md"
+          gh release upload "$RELEASE_TAG" "$SITE_DIR/appcast.xml" --clobber
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/site
+
+  deploy_pages:
+    runs-on: ubuntu-latest
+    needs: regenerate_appcast
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
