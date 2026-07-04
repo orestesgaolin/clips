@@ -10,6 +10,9 @@ final class StatusBarController: NSObject, NSMenuDelegate {
     private var menuShortcutObserver: NSObjectProtocol?
     private var activeMenu: NSMenu?
     private var menuKeyMonitor: Any?
+    /// When true, selections in the currently open menu paste as plain text.
+    /// Set when the menu is opened via the plain-text global hotkey.
+    private var plainTextMenuMode = false
     private var preferencesWindowController: PreferencesWindowController?
     private var aboutWindowController: AboutWindowController?
 
@@ -52,9 +55,14 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         }
     }
 
-    func showMenuAtCursor() {
+    func showMenuAtCursor(plainText: Bool = false) {
+        plainTextMenuMode = plainText
         let menu = buildMenu()
+        // popUp blocks until the menu is dismissed and the selected item's
+        // action has been sent, so it's safe to reset the mode afterwards.
+        // (menuDidClose fires *before* the item action, so we can't reset there.)
         menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
+        plainTextMenuMode = false
     }
 
     // MARK: - Menu Construction
@@ -184,6 +192,9 @@ final class StatusBarController: NSObject, NSMenuDelegate {
         guard activeMenu === menu else { return }
         activeMenu = nil
         removeMenuKeyMonitor()
+        // Note: plainTextMenuMode is intentionally *not* reset here — this
+        // fires before the selected item's action. showMenuAtCursor resets it
+        // after popUp returns instead.
     }
 
     private func installMenuKeyMonitorIfNeeded() {
@@ -202,27 +213,60 @@ final class StatusBarController: NSObject, NSMenuDelegate {
     private func handleMenuShortcut(_ event: NSEvent) -> Bool {
         let shortcutModifier = Preferences.menuNumberShortcutModifier
         guard shortcutModifier != .none else { return false }
-        guard event.modifierFlags.intersection([.command, .control, .option, .shift]) == shortcutModifier.modifierFlags else { return false }
+
+        let flags = event.modifierFlags.intersection([.command, .control, .option, .shift])
+        let base = shortcutModifier.modifierFlags
+        let plainModifier = Preferences.plainTextPasteModifier.modifierFlags
+
+        let asPlainText: Bool
+        if flags == base {
+            // Menu opened via the plain-text hotkey applies to number shortcuts too.
+            asPlainText = plainTextMenuMode
+        } else if !plainModifier.isEmpty, plainModifier != base, flags == base.union(plainModifier) {
+            asPlainText = true
+        } else {
+            return false
+        }
+
         guard let digit = event.charactersIgnoringModifiers?.first?.wholeNumberValue else { return false }
         guard let item = activeMenu?.items.first(where: { $0.representedObject is NSManagedObjectID && $0.tag == digit }) else { return false }
 
         activeMenu?.cancelTracking()
-        pasteEntry(item)
+        paste(objectID: item.representedObject as? NSManagedObjectID, asPlainText: asPlainText)
         return true
     }
 
     // MARK: - Actions
 
     @objc func pasteEntry(_ sender: NSMenuItem) {
-        guard let objectID = sender.representedObject as? NSManagedObjectID else { return }
+        let objectID = sender.representedObject as? NSManagedObjectID
+        paste(objectID: objectID, asPlainText: shouldPasteAsPlainText())
+    }
+
+    /// Determines whether a menu-item selection should paste plain text: either
+    /// the menu is in plain-text mode, or the configured modifier is held.
+    private func shouldPasteAsPlainText() -> Bool {
+        if plainTextMenuMode { return true }
+        let plainModifier = Preferences.plainTextPasteModifier.modifierFlags
+        guard !plainModifier.isEmpty else { return false }
+        guard let flags = NSApp.currentEvent?.modifierFlags.intersection([.command, .control, .option, .shift]) else { return false }
+        return flags.contains(plainModifier)
+    }
+
+    private func paste(objectID: NSManagedObjectID?, asPlainText: Bool) {
+        guard let objectID else { return }
         guard let entry = try? persistence.context.existingObject(with: objectID) as? ClipboardEntry else { return }
 
         let pasteboard = NSPasteboard.general
         monitor.shouldSkipNextChange = true
         pasteboard.clearContents()
 
-        for rep in entry.representationSet {
-            pasteboard.setData(rep.data, forType: NSPasteboard.PasteboardType(rep.typeIdentifier))
+        if asPlainText, let plainText = entry.plainText {
+            pasteboard.setString(plainText, forType: .string)
+        } else {
+            for rep in entry.representationSet {
+                pasteboard.setData(rep.data, forType: NSPasteboard.PasteboardType(rep.typeIdentifier))
+            }
         }
 
         entry.useCount += 1

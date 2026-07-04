@@ -2,10 +2,27 @@ import SwiftUI
 import Carbon.HIToolbox
 
 struct ShortcutRecorderView: View {
+    /// When true, an empty (unset) shortcut is allowed and a clear button is shown.
+    let allowsClear: Bool
+    let load: () -> (code: UInt32?, modifiers: UInt32)
+    let store: (UInt32?, UInt32) -> Void
+
     @State private var isRecording = false
-    @State private var keyCode: UInt32 = Preferences.hotKeyCode
-    @State private var modifiers: UInt32 = Preferences.hotKeyModifiers
-    private var monitor: Any?
+    @State private var keyCode: UInt32?
+    @State private var modifiers: UInt32
+
+    init(
+        allowsClear: Bool = false,
+        load: @escaping () -> (code: UInt32?, modifiers: UInt32),
+        store: @escaping (UInt32?, UInt32) -> Void
+    ) {
+        self.allowsClear = allowsClear
+        self.load = load
+        self.store = store
+        let initial = load()
+        _keyCode = State(initialValue: initial.code)
+        _modifiers = State(initialValue: initial.modifiers)
+    }
 
     var body: some View {
         HStack(spacing: 4) {
@@ -24,22 +41,33 @@ struct ShortcutRecorderView: View {
             if isRecording {
                 Button("Cancel") { isRecording = false }
                     .controlSize(.small)
+            } else if allowsClear, keyCode != nil {
+                Button {
+                    keyCode = nil
+                    modifiers = 0
+                    store(nil, 0)
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                }
+                .buttonStyle(.borderless)
+                .help("Clear shortcut")
             }
         }
         .background(isRecording ? ShortcutCaptureView(
             onCapture: { code, mods in
-                keyCode = UInt32(code)
-                modifiers = carbonModifiers(from: mods)
-                Preferences.hotKeyCode = keyCode
-                Preferences.hotKeyModifiers = modifiers
+                let newCode = UInt32(code)
+                let newModifiers = carbonModifiers(from: mods)
+                keyCode = newCode
+                modifiers = newModifiers
+                store(newCode, newModifiers)
                 isRecording = false
-                NotificationCenter.default.post(name: .hotKeyDidChange, object: nil)
             },
             onCancel: { isRecording = false }
         ) : nil)
     }
 
     private var displayString: String {
+        guard let keyCode else { return "None" }
         var parts: [String] = []
         if modifiers & UInt32(controlKey) != 0 { parts.append("\u{2303}") }
         if modifiers & UInt32(optionKey) != 0 { parts.append("\u{2325}") }

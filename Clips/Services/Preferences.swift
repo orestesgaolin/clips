@@ -23,6 +23,32 @@ enum Preferences {
         set { defaults.set(Int(newValue), forKey: "hotKeyModifiers") }
     }
 
+    /// Global hotkey that opens the menu in plain-text paste mode.
+    /// `nil` when unset — the hotkey is disabled until the user records one.
+    static var plainTextHotKeyCode: UInt32? {
+        get {
+            defaults.object(forKey: "plainTextHotKeyCode") != nil
+                ? UInt32(defaults.integer(forKey: "plainTextHotKeyCode"))
+                : nil
+        }
+        set {
+            if let newValue {
+                defaults.set(Int(newValue), forKey: "plainTextHotKeyCode")
+            } else {
+                defaults.removeObject(forKey: "plainTextHotKeyCode")
+            }
+        }
+    }
+
+    static var plainTextHotKeyModifiers: UInt32 {
+        get { UInt32(defaults.integer(forKey: "plainTextHotKeyModifiers")) }
+        set { defaults.set(Int(newValue), forKey: "plainTextHotKeyModifiers") }
+    }
+
+    static var isPlainTextHotKeyEnabled: Bool {
+        plainTextHotKeyCode != nil && plainTextHotKeyModifiers != 0
+    }
+
     enum SortOrder: String, CaseIterable {
         case newest
         case mostUsed
@@ -72,6 +98,36 @@ enum Preferences {
         }
     }
 
+    /// Modifier held while selecting a menu item (click or number shortcut)
+    /// to paste the item as plain text, stripping rich formatting.
+    enum PlainTextPasteModifier: String, CaseIterable {
+        case none
+        case option
+        case command
+        case control
+        case shift
+
+        var displayName: String {
+            switch self {
+            case .none: return "None"
+            case .option: return "Option (⌥)"
+            case .command: return "Command (⌘)"
+            case .control: return "Control (⌃)"
+            case .shift: return "Shift (⇧)"
+            }
+        }
+
+        var modifierFlags: NSEvent.ModifierFlags {
+            switch self {
+            case .none: return []
+            case .option: return .option
+            case .command: return .command
+            case .control: return .control
+            case .shift: return .shift
+            }
+        }
+    }
+
     static var launchAtLogin: Bool {
         get { defaults.bool(forKey: "launchAtLogin") }
         set { defaults.set(newValue, forKey: "launchAtLogin") }
@@ -98,6 +154,11 @@ enum Preferences {
     static var menuNumberShortcutModifier: MenuNumberShortcutModifier {
         get { MenuNumberShortcutModifier(rawValue: defaults.string(forKey: "menuNumberShortcutModifier") ?? "") ?? .none }
         set { defaults.set(newValue.rawValue, forKey: "menuNumberShortcutModifier") }
+    }
+
+    static var plainTextPasteModifier: PlainTextPasteModifier {
+        get { PlainTextPasteModifier(rawValue: defaults.string(forKey: "plainTextPasteModifier") ?? "") ?? .option }
+        set { defaults.set(newValue.rawValue, forKey: "plainTextPasteModifier") }
     }
 
     static var inlineItemCount: Int {

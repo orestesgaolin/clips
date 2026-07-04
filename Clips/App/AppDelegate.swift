@@ -32,8 +32,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let persistence = PersistenceController.shared
         clipboardMonitor = ClipboardMonitor(persistence: persistence)
         statusBarController = StatusBarController(persistence: persistence, monitor: clipboardMonitor)
-        hotKeyManager = HotKeyManager { [weak self] in
+        hotKeyManager = HotKeyManager()
+        hotKeyManager.addHotKey(
+            id: 1,
+            keyCode: { Preferences.hotKeyCode },
+            modifiers: { Preferences.hotKeyModifiers }
+        ) { [weak self] in
             self?.statusBarController.showMenuAtCursor()
+        }
+        hotKeyManager.addHotKey(
+            id: 2,
+            keyCode: { Preferences.plainTextHotKeyCode },
+            modifiers: { Preferences.plainTextHotKeyModifiers }
+        ) { [weak self] in
+            self?.statusBarController.showMenuAtCursor(plainText: true)
         }
         clipboardMonitor.start()
         hotKeyManager.register()

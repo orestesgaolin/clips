@@ -121,6 +121,7 @@ private struct GeneralTab: View {
     @AppStorage("sortOrder") private var sortOrder = "newest"
     @AppStorage("pastingMovesToTop") private var pastingMovesToTop = true
     @AppStorage("menuNumberShortcutModifier") private var menuNumberShortcutModifier = Preferences.MenuNumberShortcutModifier.none.rawValue
+    @AppStorage("plainTextPasteModifier") private var plainTextPasteModifier = Preferences.PlainTextPasteModifier.option.rawValue
 
     var body: some View {
         Form {
@@ -148,11 +149,30 @@ private struct GeneralTab: View {
 
             Divider()
 
-            LabeledContent("Paste shortcut:") {
-                ShortcutRecorderView()
+            LabeledContent("Paste:") {
+                ShortcutRecorderView(
+                    load: { (Preferences.hotKeyCode, Preferences.hotKeyModifiers) },
+                    store: { code, mods in
+                        Preferences.hotKeyCode = code ?? Preferences.hotKeyCode
+                        Preferences.hotKeyModifiers = mods
+                        NotificationCenter.default.post(name: .hotKeyDidChange, object: nil)
+                    }
+                )
             }
 
-            Picker("Select item shortcut:", selection: $menuNumberShortcutModifier) {
+            LabeledContent("Paste as plain text:") {
+                ShortcutRecorderView(
+                    allowsClear: true,
+                    load: { (Preferences.plainTextHotKeyCode, Preferences.plainTextHotKeyModifiers) },
+                    store: { code, mods in
+                        Preferences.plainTextHotKeyCode = code
+                        Preferences.plainTextHotKeyModifiers = mods
+                        NotificationCenter.default.post(name: .hotKeyDidChange, object: nil)
+                    }
+                )
+            }
+
+            Picker("Select item:", selection: $menuNumberShortcutModifier) {
                 ForEach(Preferences.MenuNumberShortcutModifier.allCases, id: \.self) { modifier in
                     Text(modifier.displayName).tag(modifier.rawValue)
                 }
@@ -161,7 +181,18 @@ private struct GeneralTab: View {
             .onChange(of: menuNumberShortcutModifier) { _, _ in
                 NotificationCenter.default.post(name: .menuShortcutPreferencesDidChange, object: nil)
             }
-          
+
+            Picker("Plain text modifier:", selection: $plainTextPasteModifier) {
+                ForEach(Preferences.PlainTextPasteModifier.allCases, id: \.self) { modifier in
+                    Text(modifier.displayName).tag(modifier.rawValue)
+                }
+            }
+            .pickerStyle(.menu)
+
+            Text("Hold this key while selecting an item to paste it as plain text")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
             Divider()
           
             Button("Check for Updates…") {
