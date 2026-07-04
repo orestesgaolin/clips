@@ -52,6 +52,7 @@ jobs:
       - name: Install tools
         run: |
           SPARKLE_VER=2.9.2
+          brew trust --formula orestesgaolin/tap/changelog_cli
           brew tap orestesgaolin/tap
           brew install xcodegen changelog_cli
           npm install --global create-dmg
